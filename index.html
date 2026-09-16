@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kritik & Saran</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #07060d;
+    --panel: rgba(16, 14, 28, 0.72);
+    --line: rgba(255, 255, 255, 0.08);
+    --text: #f3f1fb;
+    --text-dim: #9b93b8;
+    --red: #ff2d5e;
+    --blue: #2e6bff;
+    --purple: #a63bff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 16px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .glow {
+    position: fixed;
+    width: 480px;
+    height: 480px;
+    border-radius: 50%;
+    filter: blur(110px);
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glow-a {
+    top: -140px;
+    left: -140px;
+    background: var(--red);
+    animation: driftA 14s ease-in-out infinite alternate, hueShift 10s linear infinite;
+  }
+
+  .glow-b {
+    bottom: -160px;
+    right: -120px;
+    background: var(--blue);
+    animation: driftB 16s ease-in-out infinite alternate, hueShift 10s linear infinite reverse;
+  }
+
+  @keyframes driftA {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(60px, 50px) scale(1.2); }
+  }
+
+  @keyframes driftB {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(-50px, -40px) scale(1.15); }
+  }
+
+  @keyframes hueShift {
+    0%   { filter: blur(110px) hue-rotate(0deg); }
+    50%  { filter: blur(110px) hue-rotate(35deg); }
+    100% { filter: blur(110px) hue-rotate(0deg); }
+  }
+
+  .stage { width: 100%; max-width: 460px; position: relative; z-index: 1; }
+
+  .card {
+    position: relative;
+    background: var(--panel);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-radius: 20px;
+    padding: 2px;
+    background-clip: padding-box;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    padding: 2px;
+    background: linear-gradient(120deg, var(--red), var(--purple), var(--blue), var(--purple), var(--red));
+    background-size: 300% 300%;
+    animation: borderFlow 8s linear infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    z-index: 0;
+  }
+
+  @keyframes borderFlow {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+
+  .inner {
+    position: relative;
+    z-index: 1;
+    background: rgba(10, 9, 18, 0.55);
+    border-radius: 18px;
+    padding: 34px 26px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 5px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.5px;
+    color: var(--purple);
+    background: rgba(166, 59, 255, 0.12);
+    border: 1px solid rgba(166, 59, 255, 0.4);
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+
+  .heading { text-align: center; margin-bottom: 26px; }
+
+  .heading h1 {
+    font-size: 27px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, var(--red), var(--purple), var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    background-size: 200% auto;
+    animation: textGlow 6s linear infinite;
+  }
+
+  @keyframes textGlow {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+
+  .heading p {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--text-dim);
+  }
+
+  .field { margin-bottom: 20px; }
+
+  .field label.field-title {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+
+  input[type="text"], textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  input[type="text"]:focus, textarea:focus {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 3px rgba(166, 59, 255, 0.18), 0 0 16px rgba(166, 59, 255, 0.25);
+  }
+
+  input[type="text"]:disabled { color: var(--text-dim); opacity: 0.6; }
+
+  textarea { resize: vertical; min-height: 96px; }
+
+  .toggle-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding: 4px 2px;
+  }
+
+  .toggle-row input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .switch {
+    width: 38px;
+    height: 22px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid var(--line);
+    position: relative;
+    flex-shrink: 0;
+    display: inline-block;
+    transition: background 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  .switch::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #f3f1fb;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .toggle-row input:checked ~ .switch {
+    background: var(--blue);
+    border-color: transparent;
+    box-shadow: 0 0 12px rgba(46, 107, 255, 0.6);
+  }
+
+  .toggle-row input:checked ~ .switch::after {
+    transform: translateX(16px);
+  }
+
+  .toggle-row span.label {
+    font-size: 13px;
+    color: var(--text-dim);
+    transition: color 0.2s ease;
+    line-height: 1;
+  }
+
+  .toggle-row:hover span.label { color: var(--text); }
+
+  .stamps { display: flex; gap: 8px; margin-bottom: 10px; }
+
+  .stamp-btn {
+    flex: 1;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-dim);
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .stamp-btn:hover {
+    border-color: var(--purple);
+    transform: translateY(-2px) scale(1.08);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .stamp-btn.active {
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--red), var(--purple));
+    box-shadow: 0 0 18px rgba(166, 59, 255, 0.55);
+    transform: scale(1.12);
+  }
+
+  .rating-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--blue);
+    text-align: center;
+  }
+
+  .char-counter {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+
+  .btn-submit {
+    width: 100%;
+    margin-top: 6px;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 9px;
+    background: linear-gradient(90deg, var(--red), var(--purple), var(--blue), var(--purple), var(--red));
+    background-size: 300% 100%;
+    animation: btnFlow 6s linear infinite;
+    box-shadow: 0 0 24px rgba(166, 59, 255, 0.4);
+    transition: transform 0.15s ease;
+  }
+
+  @keyframes btnFlow {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+  }
+
+  .btn-submit:hover { box-shadow: 0 0 32px rgba(255, 45, 94, 0.45); }
+  .btn-submit:active { transform: scale(0.98); }
+
+  .btn-spinner {
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .alert {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    border: 1px solid var(--line);
+  }
+
+  .alert.success { color: #fff; background: rgba(46, 107, 255, 0.14); border-color: rgba(46, 107, 255, 0.5); }
+  .alert.error { color: #fff; background: rgba(255, 45, 94, 0.14); border-color: rgba(255, 45, 94, 0.5); }
+
+  .hidden { display: none !important; }
+
+  .footer {
+    margin-top: 22px;
+    text-align: center;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+
+  .footer p {
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .creator-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--purple);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+
+  .creator-link:hover { color: var(--blue); transform: translateY(-1px); }
+
+  .sub-credit {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--text-dim);
+    opacity: 0.75;
+    letter-spacing: 0.3px;
+  }
+
+  .sub-credit em { font-style: italic; }
+
+  @media (max-width: 380px) {
+    .inner { padding: 28px 20px; }
+    .heading h1 { font-size: 23px; }
+    .stamp-btn { font-size: 18px; }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="glow glow-a"></div>
+<div class="glow glow-b"></div>
+
+<main class="stage">
+  <div class="card">
+    <div class="inner">
+
+      <span class="badge">FEEDBACK // TERMINAL</span>
+
+      <header class="heading">
+        <h1>Kritik & Saran</h1>
+        <p>Suara kamu langsung masuk ke sistem. Tulis apa saja yang perlu diperbaiki.</p>
+      </header>
+
+      <form id="feedbackForm" class="form">
+
+        <div class="field">
+          <label class="field-title" for="nama">NAMA</label>
+          <input type="text" id="nama" name="nama" placeholder="Masukkan nama kamu" required maxlength="100" autocomplete="off">
+
+          <label class="toggle-row" for="anonimCheckbox">
+            <input type="checkbox" id="anonimCheckbox">
+            <span class="switch"></span>
+            <span class="label">Kirim sebagai anonim</span>
+          </label>
+        </div>
+
+        <div class="field">
+          <label class="field-title">RATING KEPUASAN</label>
+          <div class="stamps" id="starRating">
+            <button type="button" class="stamp-btn" data-value="1" title="Sangat Buruk">😡</button>
+            <button type="button" class="stamp-btn" data-value="2" title="Buruk">🙁</button>
+            <button type="button" class="stamp-btn" data-value="3" title="Cukup">😐</button>
+            <button type="button" class="stamp-btn" data-value="4" title="Puas">🙂</button>
+            <button type="button" class="stamp-btn active" data-value="5" title="Sangat Puas">😍</button>
+          </div>
+          <input type="hidden" id="rating" name="rating" value="5">
+          <div class="rating-text" id="ratingDesc">😍 Sangat Puas (5/5)</div>
+        </div>
+
+        <div class="field">
+          <label class="field-title" for="pesan">KRITIK DAN SARAN</label>
+          <textarea id="pesan" name="pesan" placeholder="Tuliskan kritik dan saran kamu di sini..." required maxlength="1000"></textarea>
+          <div class="char-counter"><span id="charCount">0</span>/1000</div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn-submit">
+          <span class="btn-text">Kirim Masukan</span>
+          <span class="btn-spinner hidden"></span>
+        </button>
+
+      </form>
+
+      <div id="alertBox" class="alert hidden"></div>
+
+      <footer class="footer">
+        <p>
+          Created by
+          <a href="https://www.instagram.com/_moonwh1sper" target="_blank" rel="noopener noreferrer" class="creator-link">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+            <span>_moonwh1sper</span>
+          </a>
+        </p>
+        <div class="sub-credit">
+          <em>International Class at Nusa Putra University</em>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+</main>
+
+<script>
+  const namaInput = document.getElementById('nama');
+  const anonimCheckbox = document.getElementById('anonimCheckbox');
+  const stamps = document.querySelectorAll('.stamp-btn');
+  const ratingInput = document.getElementById('rating');
+  const ratingDesc = document.getElementById('ratingDesc');
+  const pesanInput = document.getElementById('pesan');
+  const charCount = document.getElementById('charCount');
+  const form = document.getElementById('feedbackForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const btnText = submitBtn.querySelector('.btn-text');
+  const btnSpinner = submitBtn.querySelector('.btn-spinner');
+  const alertBox = document.getElementById('alertBox');
+
+  const ratingLabels = {
+    1: '😡 Sangat Buruk (1/5)',
+    2: '🙁 Buruk (2/5)',
+    3: '😐 Cukup (3/5)',
+    4: '🙂 Puas (4/5)',
+    5: '😍 Sangat Puas (5/5)'
+  };
+
+  let savedName = '';
+
+  anonimCheckbox.addEventListener('change', () => {
+    if (anonimCheckbox.checked) {
+      savedName = namaInput.value;
+      namaInput.value = 'Anonim';
+      namaInput.disabled = true;
+    } else {
+      namaInput.disabled = false;
+      namaInput.value = savedName;
+      namaInput.focus();
+    }
+  });
+
+  function setRating(val) {
+    ratingInput.value = val;
+    ratingDesc.textContent = ratingLabels[val];
+    stamps.forEach(s => {
+      const v = parseInt(s.getAttribute('data-value'), 10);
+      s.classList.toggle('active', v === val);
+    });
+  }
+
+  setRating(5);
+
+  stamps.forEach(s => {
+    s.addEventListener('click', () => setRating(parseInt(s.getAttribute('data-value'), 10)));
+  });
+
+  pesanInput.addEventListener('input', () => {
+    charCount.textContent = pesanInput.value.length;
+  });
+
+  function showAlert(message, type) {
+    alertBox.textContent = message;
+    alertBox.className = `alert ${type}`;
+    alertBox.classList.remove('hidden');
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    alertBox.classList.add('hidden');
+
+    const isAnonim = anonimCheckbox.checked;
+    const namaVal = isAnonim ? 'Anonim' : namaInput.value.trim();
+
+    if (!isAnonim && !namaVal) {
+      showAlert('Silakan isi nama kamu, atau aktifkan mode anonim.', 'error');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    btnText.classList.add('hidden');
+    btnSpinner.classList.remove('hidden');
+
+    try {
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nama: namaVal,
+          is_anonim: isAnonim,
+          rating: parseInt(ratingInput.value, 10),
+          pesan: pesanInput.value.trim()
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal menyimpan masukan.');
+
+      showAlert('✨ Terima kasih! Masukan kamu berhasil terkirim.', 'success');
+
+      form.reset();
+      namaInput.disabled = false;
+      setRating(5);
+      charCount.textContent = '0';
+      savedName = '';
+    } catch (err) {
+      showAlert(`❌ ${err.message}`, 'error');
+    } finally {
+      submitBtn.disabled = false;
+      btnText.classList.remove('hidden');
+      btnSpinner.classList.add('hidden');
+    }
+  });
+</script>
+
+</body>
+</html>
