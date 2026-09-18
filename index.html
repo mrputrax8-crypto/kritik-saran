@@ -3,25 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Kritik & Saran // Galaxy Vortex</title>
+<title>Kritik & Saran // Blue Cyber Galaxy</title>
 
 <!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet">
 
-<!-- Three.js untuk Render Spiral Galaksi 3D -->
+<!-- Three.js untuk Spiral Galaksi 3D -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
   :root {
-    --galaxy-core: #ffffff;
-    --galaxy-cyan: #00f0ff;
-    --galaxy-violet: #a855f7;
-    --galaxy-indigo: #4338ca;
-    --bg-dark: #020108;
-    --panel-galaxy: rgba(10, 8, 24, 0.76);
-    --border-galaxy: rgba(0, 240, 255, 0.3);
+    /* Blue RGB Spectrum Palette */
+    --blue-ice: #00f0ff;
+    --blue-electric: #38bdf8;
+    --blue-vibrant: #2563eb;
+    --blue-deep: #1d4ed8;
+    --blue-dark: #0f172a;
+    
+    --bg-dark: #020617;
+    --panel-galaxy: rgba(8, 15, 36, 0.78);
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
   }
@@ -47,7 +49,7 @@
     overflow-x: hidden;
   }
 
-  /* Canvas Spiral Galaksi 3D */
+  /* Canvas Spiral Galaksi Biru 3D */
   #galaxy-canvas {
     position: fixed;
     top: 0;
@@ -59,7 +61,7 @@
     pointer-events: none;
   }
 
-  /* Canvas Bintang Jatuh Melintasi Galaksi */
+  /* Canvas Bintang Jatuh Biru */
   #meteor-canvas {
     position: fixed;
     top: 0;
@@ -71,19 +73,24 @@
     pointer-events: none;
   }
 
-  /* Core Nebula Ambient Aura */
-  .galaxy-aura {
+  /* Dynamic Blue RGB Ambient Aura */
+  .blue-ambient {
     position: fixed;
     width: 100vw;
     height: 60vh;
     top: 0;
     left: 0;
-    background: radial-gradient(ellipse at 50% 20%, rgba(0, 240, 255, 0.18), rgba(168, 85, 247, 0.15), transparent 70%);
+    background: radial-gradient(ellipse at 50% 20%, rgba(0, 240, 255, 0.2), rgba(37, 99, 235, 0.15), transparent 70%);
     pointer-events: none;
     z-index: 2;
+    animation: bluePulse 6s ease-in-out infinite alternate;
   }
 
-  /* Container Form Android */
+  @keyframes bluePulse {
+    0% { opacity: 0.7; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.1); }
+  }
+
   .mobile-container {
     width: 100%;
     max-width: 440px;
@@ -92,24 +99,40 @@
     margin: auto;
   }
 
-  /* Kartu Kaca Galaksi */
+  /* Kartu Efek Blue RGB Animated Border Wave */
   .galaxy-card {
     position: relative;
     border-radius: 24px;
-    padding: 1.5px;
-    background: linear-gradient(145deg, rgba(0, 240, 255, 0.6), rgba(168, 85, 247, 0.4), rgba(67, 56, 202, 0.2));
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 240, 255, 0.2);
+    padding: 2px;
+    background: linear-gradient(
+      135deg,
+      var(--blue-ice),
+      var(--blue-vibrant),
+      var(--blue-electric),
+      var(--blue-deep),
+      var(--blue-ice)
+    );
+    background-size: 300% 300%;
+    animation: blueBorderFlow 5s ease infinite;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 35px rgba(0, 240, 255, 0.25);
+  }
+
+  @keyframes blueBorderFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
 
   .card-body {
     background: var(--panel-galaxy);
-    backdrop-filter: blur(22px);
-    -webkit-backdrop-filter: blur(22px);
-    border-radius: 22.5px;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 22px;
     padding: 24px 20px;
+    box-shadow: inset 0 0 30px rgba(0, 240, 255, 0.05);
   }
 
-  /* Badge Galaksi */
+  /* Badge Galaksi Biru */
   .galaxy-badge {
     display: inline-flex;
     align-items: center;
@@ -121,9 +144,10 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 10.5px;
     font-weight: 700;
-    color: var(--galaxy-cyan);
+    color: var(--blue-ice);
     letter-spacing: 0.5px;
     margin-bottom: 14px;
+    box-shadow: 0 0 14px rgba(0, 240, 255, 0.2);
   }
 
   .badge-core {
@@ -131,7 +155,7 @@
     height: 6px;
     border-radius: 50%;
     background: #ffffff;
-    box-shadow: 0 0 8px var(--galaxy-cyan);
+    box-shadow: 0 0 8px var(--blue-ice);
     animation: coreBlink 1.8s infinite;
   }
 
@@ -140,7 +164,7 @@
     50% { transform: scale(0.6); opacity: 0.4; }
   }
 
-  /* Header Box */
+  /* Header Box dengan Blue Shimmer Text */
   .header-box {
     text-align: center;
     margin-bottom: 22px;
@@ -148,13 +172,26 @@
 
   .header-box h1 {
     font-family: 'Orbitron', sans-serif;
-    font-size: 23px;
+    font-size: 24px;
     font-weight: 900;
     letter-spacing: 0.5px;
     margin-bottom: 6px;
-    background: linear-gradient(135deg, #ffffff 30%, #a5f3fc 70%, #c084fc 100%);
+    background: linear-gradient(
+      90deg,
+      #ffffff,
+      var(--blue-ice),
+      var(--blue-electric),
+      #ffffff
+    );
+    background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    animation: blueTextWave 4s linear infinite;
+  }
+
+  @keyframes blueTextWave {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
   }
 
   .header-box p {
@@ -177,11 +214,11 @@
     letter-spacing: 0.5px;
   }
 
-  /* Input Android (16px font mencegah auto zoom) */
+  /* Input Android (16px font anti auto-zoom) */
   input[type="text"], textarea {
     width: 100%;
-    background: rgba(3, 2, 10, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(3, 7, 18, 0.85);
+    border: 1px solid rgba(0, 240, 255, 0.15);
     border-radius: 14px;
     padding: 13px 14px;
     color: var(--text-primary);
@@ -191,7 +228,7 @@
   }
 
   input[type="text"]:focus, textarea:focus {
-    border-color: var(--galaxy-cyan);
+    border-color: var(--blue-ice);
     box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.25), 0 0 18px rgba(0, 240, 255, 0.35);
   }
 
@@ -246,9 +283,9 @@
   }
 
   .switch-row input:checked ~ .custom-switch {
-    background: linear-gradient(90deg, var(--galaxy-cyan), var(--galaxy-violet));
+    background: linear-gradient(90deg, var(--blue-ice), var(--blue-vibrant));
     border-color: transparent;
-    box-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+    box-shadow: 0 0 14px rgba(0, 240, 255, 0.7);
   }
 
   .switch-row input:checked ~ .custom-switch::after {
@@ -271,7 +308,7 @@
     flex: 1;
     height: 48px;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(0, 240, 255, 0.1);
     background: rgba(255, 255, 255, 0.03);
     color: var(--text-secondary);
     font-size: 22px;
@@ -288,7 +325,7 @@
 
   .rate-btn.active {
     border-color: transparent;
-    background: linear-gradient(135deg, var(--galaxy-cyan), var(--galaxy-violet));
+    background: linear-gradient(135deg, var(--blue-ice), var(--blue-vibrant));
     box-shadow: 0 0 18px rgba(0, 240, 255, 0.6);
     transform: scale(1.08);
   }
@@ -296,8 +333,9 @@
   .rate-caption {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
-    color: var(--galaxy-cyan);
+    color: var(--blue-ice);
     text-align: center;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
   }
 
   .char-counter {
@@ -308,26 +346,39 @@
     margin-top: 5px;
   }
 
-  /* Tombol Submit */
+  /* Tombol Submit dengan Gelombang Cahaya Biru RGB */
   .btn-submit {
     width: 100%;
     margin-top: 6px;
     padding: 15px;
     border: none;
     border-radius: 14px;
-    color: #020108;
+    color: #020617;
     font-family: 'Orbitron', sans-serif;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 900;
     letter-spacing: 0.5px;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
-    background: linear-gradient(135deg, var(--galaxy-cyan), #38bdf8);
+    background: linear-gradient(
+      90deg,
+      var(--blue-ice),
+      var(--blue-electric),
+      #60a5fa,
+      var(--blue-ice)
+    );
+    background-size: 200% 100%;
+    animation: blueBtnFlow 4s linear infinite;
     box-shadow: 0 0 25px rgba(0, 240, 255, 0.45);
     transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+
+  @keyframes blueBtnFlow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
   }
 
   .btn-submit:active {
@@ -338,8 +389,8 @@
   .btn-spinner {
     width: 16px;
     height: 16px;
-    border: 2px solid rgba(2, 1, 8, 0.35);
-    border-top-color: #020108;
+    border: 2px solid rgba(2, 6, 23, 0.35);
+    border-top-color: #020617;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -379,12 +430,12 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--galaxy-cyan), var(--galaxy-violet));
+    background: linear-gradient(135deg, var(--blue-ice), var(--blue-vibrant));
     display: inline-flex;
     justify-content: center;
     align-items: center;
     font-size: 26px;
-    color: #020108;
+    color: #020617;
     margin-bottom: 16px;
     box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
   }
@@ -407,7 +458,7 @@
   .portal-shortcut {
     margin-top: 20px;
     padding-top: 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(0, 240, 255, 0.15);
   }
 
   .portal-card {
@@ -416,10 +467,16 @@
     justify-content: space-between;
     padding: 12px 15px;
     background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(0, 240, 255, 0.3);
+    border: 1px solid rgba(0, 240, 255, 0.25);
     border-radius: 14px;
     color: #fff;
     text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .portal-card:hover {
+    border-color: var(--blue-ice);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
   }
 
   .portal-left {
@@ -437,7 +494,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--galaxy-cyan);
+    color: var(--blue-ice);
     flex-shrink: 0;
   }
 
@@ -454,15 +511,15 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 13.5px;
     font-weight: 700;
-    color: #020108;
+    color: #020617;
     text-decoration: none;
-    background: var(--galaxy-cyan);
+    background: var(--blue-ice);
     padding: 3px 9px;
     border-radius: 6px;
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
   }
 
   .moon-link:active {
@@ -484,7 +541,7 @@
   }
 
   .ig-link {
-    color: var(--galaxy-cyan);
+    color: var(--blue-ice);
     text-decoration: none;
     font-weight: 700;
     display: inline-flex;
@@ -502,10 +559,10 @@
 
 <body>
 
-<!-- Background Spiral Galaksi 3D & Meteor -->
+<!-- Background Spiral Galaksi 3D & Meteor Biru -->
 <canvas id="galaxy-canvas"></canvas>
 <canvas id="meteor-canvas"></canvas>
-<div class="galaxy-aura"></div>
+<div class="blue-ambient"></div>
 
 <main class="mobile-container">
   <div class="galaxy-card">
@@ -513,7 +570,7 @@
 
       <span class="galaxy-badge">
         <span class="badge-core"></span>
-        GALAXY // SPIRAL
+        GALAXY
       </span>
 
       <header class="header-box" id="headerSection">
@@ -615,9 +672,7 @@
   </div>
 </main>
 
-<!-- =================================================================
-     ENGINE 1: SPIRAL GALAXY 3D PARTICLES (THREE.JS)
-     ================================================================= -->
+<!-- THREE.JS GALAXY ENGINE (MONOCHROME BLUE SPECTRUM) -->
 <script>
   const galaxyCanvas = document.getElementById('galaxy-canvas');
   const scene = new THREE.Scene();
@@ -628,22 +683,21 @@
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
-  // Posisi kamera melihat spiral galaksi dari atas miring
   camera.position.set(0, 3.8, 3.2);
   camera.lookAt(0, 0, 0);
 
-  // Parameter Galaksi
+  // Palet Khusus Spektrum Biru Cyber
   const parameters = {
-    count: 3200,          // Jumlah partikel dioptimasi untuk performa Android
+    count: 3500,
     size: 0.015,
     radius: 4.8,
-    branches: 3,          // 3 Lengan spiral galaksi
+    branches: 3,
     spin: 1.2,
     randomness: 0.5,
     power: 3.5,
     insideColor: '#ffffff',
     middleColor: '#00f0ff',
-    outsideColor: '#7c3aed'
+    outsideColor: '#1d4ed8'
   };
 
   const geometry = new THREE.BufferGeometry();
@@ -657,7 +711,6 @@
   for (let i = 0; i < parameters.count; i++) {
     const i3 = i * 3;
 
-    // Posisi partikel di sepanjang radius dan cabang spiral
     const radius = Math.random() * parameters.radius;
     const spinAngle = radius * parameters.spin;
     const branchAngle = ((i % parameters.branches) / parameters.branches) * Math.PI * 2;
@@ -670,7 +723,6 @@
     positions[i3 + 1] = randomY;
     positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
 
-    // Gradasi Warna dari Pusat Galaksi ke Luar
     let mixedColor;
     if (radius < parameters.radius * 0.3) {
       mixedColor = colorInside.clone().lerp(colorMiddle, radius / (parameters.radius * 0.3));
@@ -697,24 +749,18 @@
   const galaxyPoints = new THREE.Points(geometry, material);
   scene.add(galaxyPoints);
 
-  // Pusat Galaksi (Galactic Core Glow Sphere)
+  // Core Biru Putih Bersinar
   const coreGeom = new THREE.SphereGeometry(0.3, 16, 16);
-  const coreMat = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    transparent: true,
-    opacity: 0.95
-  });
+  const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.95 });
   const coreMesh = new THREE.Mesh(coreGeom, coreMat);
   scene.add(coreMesh);
 
-  // Animasi Rotasi Galaksi
   const clock = new THREE.Clock();
 
   function animateGalaxy() {
     requestAnimationFrame(animateGalaxy);
     const elapsedTime = clock.getElapsedTime();
 
-    // Rotasi perlahan lengan galaksi
     galaxyPoints.rotation.y = elapsedTime * 0.04;
     coreMesh.rotation.y = elapsedTime * 0.08;
 
@@ -729,9 +775,7 @@
   });
 </script>
 
-<!-- =================================================================
-     ENGINE 2: HUJAN BINTANG JATUH (METEOR CANVAS 2D)
-     ================================================================= -->
+<!-- METEOR BIRU / CYAN ENGINE -->
 <script>
   const meteorCanvas = document.getElementById('meteor-canvas');
   const mCtx = meteorCanvas.getContext('2d');
@@ -758,7 +802,8 @@
       this.opacity = Math.random() * 0.7 + 0.3;
       this.delay = Math.random() * 130;
 
-      const colors = ['#00f0ff', '#ffffff', '#a855f7', '#38bdf8'];
+      // Palet Meteor Khusus Biru
+      const colors = ['#00f0ff', '#ffffff', '#38bdf8', '#60a5fa'];
       this.color = colors[Math.floor(Math.random() * colors.length)];
     }
 
@@ -813,9 +858,7 @@
   animateMeteors();
 </script>
 
-<!-- =================================================================
-     ENGINE 3: LOGIKA FEEDBACK & FORM
-     ================================================================= -->
+<!-- FORM LOGIC ENGINE -->
 <script>
   const namaInput = document.getElementById('nama');
   const anonimCheckbox = document.getElementById('anonimCheckbox');
