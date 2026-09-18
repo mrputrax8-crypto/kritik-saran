@@ -349,6 +349,39 @@
 
   .hidden { display: none !important; }
 
+  /* Tampilan Locked Jika Sudah Pernah Submit */
+  #lockedState {
+    text-align: center;
+    padding: 30px 10px 10px;
+  }
+
+  #lockedState .check-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    color: #fff;
+    margin-bottom: 20px;
+    box-shadow: 0 0 20px rgba(166, 59, 255, 0.5);
+  }
+
+  #lockedState h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+
+  #lockedState p {
+    font-size: 13.5px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
   .footer {
     margin-top: 22px;
     text-align: center;
@@ -406,11 +439,19 @@
 
       <span class="badge">FEEDBACK // TERMINAL</span>
 
-      <header class="heading">
+      <header class="heading" id="headerSection">
         <h1>Kritik & Saran</h1>
-        <p>Suara kamu langsung masuk ke sistem. Tulis apa saja yang perlu diperbaiki.</p>
+        <p>Tulis apa saja yang perlu diperbaiki.</p>
       </header>
 
+      <!-- Panel Locked (Muncul jika user sudah pernah kirim) -->
+      <div id="lockedState" class="hidden">
+        <div class="check-circle">✓</div>
+        <h2>Masukan Terkirim</h2>
+        <p>Terima kasih! Kamu sudah pernah mengirimkan kritik dan saran dari perangkat ini.</p>
+      </div>
+
+      <!-- Form Utama -->
       <form id="feedbackForm" class="form">
 
         <div class="field">
@@ -480,6 +521,8 @@
   const pesanInput = document.getElementById('pesan');
   const charCount = document.getElementById('charCount');
   const form = document.getElementById('feedbackForm');
+  const headerSection = document.getElementById('headerSection');
+  const lockedState = document.getElementById('lockedState');
   const submitBtn = document.getElementById('submitBtn');
   const btnText = submitBtn.querySelector('.btn-text');
   const btnSpinner = submitBtn.querySelector('.btn-spinner');
@@ -492,6 +535,13 @@
     4: '🙂 Puas (4/5)',
     5: '😍 Sangat Puas (5/5)'
   };
+
+  // 1. Cek apakah perangkat sudah pernah mengirim pesan
+  if (localStorage.getItem('moonwhisper_feedback_submitted') === 'true') {
+    form.classList.add('hidden');
+    headerSection.classList.add('hidden');
+    lockedState.classList.remove('hidden');
+  }
 
   let savedName = '';
 
@@ -560,19 +610,35 @@
         })
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Gagal menyimpan masukan.');
+      // Mencegah error 'Unexpected end of JSON input' jika backend mengirim body kosong
+      const text = await res.text();
+      let data = {};
 
-      showAlert('✨ Terima kasih! Masukan kamu berhasil terkirim.', 'success');
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (errJson) {
+        throw new Error(`Respon server bukan JSON (Status ${res.status}).`);
+      }
 
-      form.reset();
-      namaInput.disabled = false;
-      setRating(5);
-      charCount.textContent = '0';
-      savedName = '';
+      if (!res.ok) {
+        throw new Error(data.error || `Gagal menyimpan data (Status: ${res.status})`);
+      }
+
+      // 2. Kunci status di perangkat
+      localStorage.setItem('moonwhisper_feedback_submitted', 'true');
+
+      // Tampilkan pesan sukses sebentar lalu sembunyikan form
+      showAlert('✨ Terima kasih! Masukan kamu berhasil disimpan.', 'success');
+
+      setTimeout(() => {
+        form.classList.add('hidden');
+        headerSection.classList.add('hidden');
+        alertBox.classList.add('hidden');
+        lockedState.classList.remove('hidden');
+      }, 1200);
+
     } catch (err) {
       showAlert(`❌ ${err.message}`, 'error');
-    } finally {
       submitBtn.disabled = false;
       btnText.classList.remove('hidden');
       btnSpinner.classList.add('hidden');
