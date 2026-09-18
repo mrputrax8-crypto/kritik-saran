@@ -2,222 +2,237 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kritik & Saran</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kritik & Saran // Galaxy Vortex</title>
 
+<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet">
+
+<!-- Three.js untuk Render Spiral Galaksi 3D -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
   :root {
-    --bg: #07060d;
-    --panel: rgba(16, 14, 28, 0.72);
-    --line: rgba(255, 255, 255, 0.08);
-    --text: #f3f1fb;
-    --text-dim: #9b93b8;
-    --red: #ff2d5e;
-    --blue: #2e6bff;
-    --purple: #a63bff;
+    --galaxy-core: #ffffff;
+    --galaxy-cyan: #00f0ff;
+    --galaxy-violet: #a855f7;
+    --galaxy-indigo: #4338ca;
+    --bg-dark: #020108;
+    --panel-galaxy: rgba(10, 8, 24, 0.76);
+    --border-galaxy: rgba(0, 240, 255, 0.3);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
 
   body {
     min-height: 100vh;
-    background: var(--bg);
-    color: var(--text);
+    min-height: 100dvh;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 40px 16px;
+    padding: 18px 14px 28px;
     position: relative;
     overflow-x: hidden;
   }
 
-  .glow {
+  /* Canvas Spiral Galaksi 3D */
+  #galaxy-canvas {
     position: fixed;
-    width: 480px;
-    height: 480px;
-    border-radius: 50%;
-    filter: blur(110px);
-    opacity: 0.55;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    z-index: 0;
     pointer-events: none;
-    z-index: 0;
   }
 
-  .glow-a {
-    top: -140px;
-    left: -140px;
-    background: var(--red);
-    animation: driftA 14s ease-in-out infinite alternate, hueShift 10s linear infinite;
-  }
-
-  .glow-b {
-    bottom: -160px;
-    right: -120px;
-    background: var(--blue);
-    animation: driftB 16s ease-in-out infinite alternate, hueShift 10s linear infinite reverse;
-  }
-
-  @keyframes driftA {
-    from { transform: translate(0, 0) scale(1); }
-    to   { transform: translate(60px, 50px) scale(1.2); }
-  }
-
-  @keyframes driftB {
-    from { transform: translate(0, 0) scale(1); }
-    to   { transform: translate(-50px, -40px) scale(1.15); }
-  }
-
-  @keyframes hueShift {
-    0%   { filter: blur(110px) hue-rotate(0deg); }
-    50%  { filter: blur(110px) hue-rotate(35deg); }
-    100% { filter: blur(110px) hue-rotate(0deg); }
-  }
-
-  .stage { width: 100%; max-width: 460px; position: relative; z-index: 1; }
-
-  .card {
-    position: relative;
-    background: var(--panel);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border-radius: 20px;
-    padding: 2px;
-    background-clip: padding-box;
-  }
-
-  .card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 20px;
-    padding: 2px;
-    background: linear-gradient(120deg, var(--red), var(--purple), var(--blue), var(--purple), var(--red));
-    background-size: 300% 300%;
-    animation: borderFlow 8s linear infinite;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    z-index: 0;
-  }
-
-  @keyframes borderFlow {
-    0%   { background-position: 0% 50%; }
-    100% { background-position: 200% 50%; }
-  }
-
-  .inner {
-    position: relative;
+  /* Canvas Bintang Jatuh Melintasi Galaksi */
+  #meteor-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
     z-index: 1;
-    background: rgba(10, 9, 18, 0.55);
-    border-radius: 18px;
-    padding: 34px 26px;
+    pointer-events: none;
   }
 
-  .badge {
-    display: inline-block;
-    padding: 5px 12px;
+  /* Core Nebula Ambient Aura */
+  .galaxy-aura {
+    position: fixed;
+    width: 100vw;
+    height: 60vh;
+    top: 0;
+    left: 0;
+    background: radial-gradient(ellipse at 50% 20%, rgba(0, 240, 255, 0.18), rgba(168, 85, 247, 0.15), transparent 70%);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Container Form Android */
+  .mobile-container {
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+    z-index: 10;
+    margin: auto;
+  }
+
+  /* Kartu Kaca Galaksi */
+  .galaxy-card {
+    position: relative;
+    border-radius: 24px;
+    padding: 1.5px;
+    background: linear-gradient(145deg, rgba(0, 240, 255, 0.6), rgba(168, 85, 247, 0.4), rgba(67, 56, 202, 0.2));
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 240, 255, 0.2);
+  }
+
+  .card-body {
+    background: var(--panel-galaxy);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border-radius: 22.5px;
+    padding: 24px 20px;
+  }
+
+  /* Badge Galaksi */
+  .galaxy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid rgba(0, 240, 255, 0.4);
     font-family: 'JetBrains Mono', monospace;
     font-size: 10.5px;
+    font-weight: 700;
+    color: var(--galaxy-cyan);
     letter-spacing: 0.5px;
-    color: var(--purple);
-    background: rgba(166, 59, 255, 0.12);
-    border: 1px solid rgba(166, 59, 255, 0.4);
-    border-radius: 999px;
     margin-bottom: 14px;
   }
 
-  .heading { text-align: center; margin-bottom: 26px; }
+  .badge-core {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 0 8px var(--galaxy-cyan);
+    animation: coreBlink 1.8s infinite;
+  }
 
-  .heading h1 {
-    font-size: 27px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-    margin-bottom: 8px;
-    background: linear-gradient(90deg, var(--red), var(--purple), var(--blue));
+  @keyframes coreBlink {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(0.6); opacity: 0.4; }
+  }
+
+  /* Header Box */
+  .header-box {
+    text-align: center;
+    margin-bottom: 22px;
+  }
+
+  .header-box h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 23px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #ffffff 30%, #a5f3fc 70%, #c084fc 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-clip: text;
-    background-size: 200% auto;
-    animation: textGlow 6s linear infinite;
   }
 
-  @keyframes textGlow {
-    0%   { background-position: 0% 50%; }
-    100% { background-position: 200% 50%; }
-  }
-
-  .heading p {
+  .header-box p {
     font-size: 13px;
-    line-height: 1.55;
-    color: var(--text-dim);
+    color: var(--text-secondary);
+    line-height: 1.45;
   }
 
-  .field { margin-bottom: 20px; }
+  .form-group {
+    margin-bottom: 18px;
+  }
 
-  .field label.field-title {
+  .label-title {
     display: block;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11.5px;
-    font-weight: 500;
-    color: var(--text-dim);
-    margin-bottom: 8px;
-    letter-spacing: 0.3px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #cbd5e1;
+    margin-bottom: 7px;
+    letter-spacing: 0.5px;
   }
 
+  /* Input Android (16px font mencegah auto zoom) */
   input[type="text"], textarea {
     width: 100%;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 12px 14px;
-    color: var(--text);
-    font-size: 14px;
+    background: rgba(3, 2, 10, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: 13px 14px;
+    color: var(--text-primary);
+    font-size: 16px;
     outline: none;
-    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    transition: all 0.25s ease;
   }
 
   input[type="text"]:focus, textarea:focus {
-    border-color: var(--purple);
-    box-shadow: 0 0 0 3px rgba(166, 59, 255, 0.18), 0 0 16px rgba(166, 59, 255, 0.25);
+    border-color: var(--galaxy-cyan);
+    box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.25), 0 0 18px rgba(0, 240, 255, 0.35);
   }
 
-  input[type="text"]:disabled { color: var(--text-dim); opacity: 0.6; }
+  input[type="text"]:disabled {
+    color: var(--text-secondary);
+    opacity: 0.6;
+  }
 
-  textarea { resize: vertical; min-height: 96px; }
+  textarea {
+    resize: vertical;
+    min-height: 88px;
+  }
 
-  .toggle-row {
+  /* Toggle Switch Anonim */
+  .switch-row {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
-    margin-top: 10px;
+    gap: 10px;
+    margin-top: 9px;
     cursor: pointer;
     user-select: none;
-    position: relative;
-    padding: 4px 2px;
   }
 
-  .toggle-row input {
+  .switch-row input {
     position: absolute;
     opacity: 0;
     pointer-events: none;
   }
 
-  .switch {
+  .custom-switch {
     width: 38px;
     height: 22px;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.12);
-    border: 1px solid var(--line);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     position: relative;
     flex-shrink: 0;
-    display: inline-block;
-    transition: background 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    transition: all 0.25s ease;
   }
 
-  .switch::after {
+  .custom-switch::after {
     content: "";
     position: absolute;
     top: 2px;
@@ -225,64 +240,63 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #f3f1fb;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
     transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  .toggle-row input:checked ~ .switch {
-    background: var(--blue);
+  .switch-row input:checked ~ .custom-switch {
+    background: linear-gradient(90deg, var(--galaxy-cyan), var(--galaxy-violet));
     border-color: transparent;
-    box-shadow: 0 0 12px rgba(46, 107, 255, 0.6);
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
   }
 
-  .toggle-row input:checked ~ .switch::after {
+  .switch-row input:checked ~ .custom-switch::after {
     transform: translateX(16px);
   }
 
-  .toggle-row span.label {
+  .switch-label {
     font-size: 13px;
-    color: var(--text-dim);
-    transition: color 0.2s ease;
-    line-height: 1;
+    color: var(--text-secondary);
   }
 
-  .toggle-row:hover span.label { color: var(--text); }
+  /* Touch Rating Buttons */
+  .rating-grid {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
 
-  .stamps { display: flex; gap: 8px; margin-bottom: 10px; }
-
-  .stamp-btn {
+  .rate-btn {
     flex: 1;
-    aspect-ratio: 1;
+    height: 48px;
     border-radius: 12px;
-    border: 1px solid var(--line);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(255, 255, 255, 0.03);
-    color: var(--text-dim);
+    color: var(--text-secondary);
     font-size: 22px;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  .stamp-btn:hover {
-    border-color: var(--purple);
-    transform: translateY(-2px) scale(1.08);
-    background: rgba(255, 255, 255, 0.08);
+  .rate-btn:active {
+    transform: scale(0.92);
   }
 
-  .stamp-btn.active {
+  .rate-btn.active {
     border-color: transparent;
-    background: linear-gradient(135deg, var(--red), var(--purple));
-    box-shadow: 0 0 18px rgba(166, 59, 255, 0.55);
-    transform: scale(1.12);
+    background: linear-gradient(135deg, var(--galaxy-cyan), var(--galaxy-violet));
+    box-shadow: 0 0 18px rgba(0, 240, 255, 0.6);
+    transform: scale(1.08);
   }
 
-  .rating-text {
+  .rate-caption {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
-    color: var(--blue);
+    color: var(--galaxy-cyan);
     text-align: center;
   }
 
@@ -290,220 +304,309 @@
     text-align: right;
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 6px;
+    color: var(--text-secondary);
+    margin-top: 5px;
   }
 
+  /* Tombol Submit */
   .btn-submit {
     width: 100%;
     margin-top: 6px;
-    padding: 14px;
+    padding: 15px;
     border: none;
-    border-radius: 12px;
-    color: #fff;
-    font-size: 14.5px;
-    font-weight: 600;
+    border-radius: 14px;
+    color: #020108;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 9px;
-    background: linear-gradient(90deg, var(--red), var(--purple), var(--blue), var(--purple), var(--red));
-    background-size: 300% 100%;
-    animation: btnFlow 6s linear infinite;
-    box-shadow: 0 0 24px rgba(166, 59, 255, 0.4);
-    transition: transform 0.15s ease;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--galaxy-cyan), #38bdf8);
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.45);
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
   }
 
-  @keyframes btnFlow {
-    0%   { background-position: 0% 50%; }
-    100% { background-position: 300% 50%; }
+  .btn-submit:active {
+    transform: scale(0.97);
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.7);
   }
-
-  .btn-submit:hover { box-shadow: 0 0 32px rgba(255, 45, 94, 0.45); }
-  .btn-submit:active { transform: scale(0.98); }
 
   .btn-spinner {
-    width: 15px;
-    height: 15px;
-    border: 2px solid rgba(255, 255, 255, 0.35);
-    border-top-color: #fff;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(2, 1, 8, 0.35);
+    border-top-color: #020108;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .alert {
-    margin-top: 16px;
+  .alert-box {
+    margin-top: 14px;
     padding: 12px 14px;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
     text-align: center;
-    border: 1px solid var(--line);
   }
 
-  .alert.success { color: #fff; background: rgba(46, 107, 255, 0.14); border-color: rgba(46, 107, 255, 0.5); }
-  .alert.error { color: #fff; background: rgba(255, 45, 94, 0.14); border-color: rgba(255, 45, 94, 0.5); }
+  .alert-box.success {
+    color: #fff;
+    background: rgba(0, 240, 255, 0.18);
+    border: 1px solid rgba(0, 240, 255, 0.5);
+  }
+
+  .alert-box.error {
+    color: #fff;
+    background: rgba(239, 68, 68, 0.18);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+  }
 
   .hidden { display: none !important; }
 
-  /* Tampilan Locked Jika Sudah Pernah Submit */
+  /* Locked Status */
   #lockedState {
     text-align: center;
-    padding: 30px 10px 10px;
+    padding: 24px 8px 6px;
   }
 
-  #lockedState .check-circle {
-    width: 60px;
-    height: 60px;
+  .locked-icon {
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--blue), var(--purple));
+    background: linear-gradient(135deg, var(--galaxy-cyan), var(--galaxy-violet));
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    font-size: 28px;
-    color: #fff;
-    margin-bottom: 20px;
-    box-shadow: 0 0 20px rgba(166, 59, 255, 0.5);
+    font-size: 26px;
+    color: #020108;
+    margin-bottom: 16px;
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
   }
 
   #lockedState h2 {
-    font-size: 20px;
-    font-weight: 700;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 19px;
+    font-weight: 800;
     color: #fff;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 
   #lockedState p {
-    font-size: 13.5px;
-    color: var(--text-dim);
+    font-size: 13px;
+    color: var(--text-secondary);
     line-height: 1.5;
   }
 
-  .footer {
-    margin-top: 22px;
-    text-align: center;
+  /* Shortcut Link: Portofolio? _moonwh1sper */
+  .portal-shortcut {
+    margin-top: 20px;
     padding-top: 16px;
-    border-top: 1px solid var(--line);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .footer p {
-    font-size: 12px;
-    color: var(--text-dim);
+  .portal-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    border-radius: 14px;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .portal-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .portal-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--galaxy-cyan);
+    flex-shrink: 0;
+  }
+
+  .portal-text {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .moon-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #020108;
+    text-decoration: none;
+    background: var(--galaxy-cyan);
+    padding: 3px 9px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+  }
+
+  .moon-link:active {
+    transform: scale(0.95);
+  }
+
+  .footer-meta {
+    margin-top: 16px;
+    text-align: center;
+  }
+
+  .footer-meta p {
+    font-size: 11.5px;
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
   }
 
-  .creator-link {
+  .ig-link {
+    color: var(--galaxy-cyan);
+    text-decoration: none;
+    font-weight: 700;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    color: var(--purple);
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.2s ease, transform 0.2s ease;
+    gap: 4px;
   }
 
-  .creator-link:hover { color: var(--blue); transform: translateY(-1px); }
-
-  .sub-credit {
-    margin-top: 6px;
-    font-size: 11px;
-    color: var(--text-dim);
-    opacity: 0.75;
-    letter-spacing: 0.3px;
-  }
-
-  .sub-credit em { font-style: italic; }
-
-  @media (max-width: 380px) {
-    .inner { padding: 28px 20px; }
-    .heading h1 { font-size: 23px; }
-    .stamp-btn { font-size: 18px; }
+  .sub-note {
+    margin-top: 4px;
+    font-size: 10.5px;
+    color: #64748b;
   }
 </style>
 </head>
 
 <body>
 
-<div class="glow glow-a"></div>
-<div class="glow glow-b"></div>
+<!-- Background Spiral Galaksi 3D & Meteor -->
+<canvas id="galaxy-canvas"></canvas>
+<canvas id="meteor-canvas"></canvas>
+<div class="galaxy-aura"></div>
 
-<main class="stage">
-  <div class="card">
-    <div class="inner">
+<main class="mobile-container">
+  <div class="galaxy-card">
+    <div class="card-body">
 
-      <span class="badge">FEEDBACK // TERMINAL</span>
+      <span class="galaxy-badge">
+        <span class="badge-core"></span>
+        GALAXY // SPIRAL
+      </span>
 
-      <header class="heading" id="headerSection">
+      <header class="header-box" id="headerSection">
         <h1>Kritik & Saran</h1>
-        <p>Apa saja yang perlu diperbaiki !!!</p>
+        <p>Tulis apa saja yang perlu diperbaiki.</p>
       </header>
 
-      <!-- Panel Locked (Muncul jika user sudah pernah kirim) -->
+      <!-- Panel Locked -->
       <div id="lockedState" class="hidden">
-        <div class="check-circle">✓</div>
+        <div class="locked-icon">✓</div>
         <h2>Masukan Terkirim</h2>
-        <p>Terima kasih! Kamu sudah pernah mengirimkan kritik dan saran.</p>
+        <p>Terima kasih! Kamu sudah pernah mengirimkan kritik dan saran dari perangkat Android ini.</p>
       </div>
 
-      <!-- Form Utama -->
-      <form id="feedbackForm" class="form">
+      <!-- Form Feedback -->
+      <form id="feedbackForm">
 
-        <div class="field">
-          <label class="field-title" for="nama">NAMA</label>
-          <input type="text" id="nama" name="nama" placeholder="Masukkan nama kamu" required maxlength="100" autocomplete="off">
+        <div class="form-group">
+          <label class="label-title" for="nama">NAMA</label>
+          <input type="text" id="nama" name="nama" placeholder="Ketik nama kamu" required maxlength="100" autocomplete="off">
 
-          <label class="toggle-row" for="anonimCheckbox">
+          <label class="switch-row" for="anonimCheckbox">
             <input type="checkbox" id="anonimCheckbox">
-            <span class="switch"></span>
-            <span class="label">Kirim sebagai anonim</span>
+            <span class="custom-switch"></span>
+            <span class="switch-label">Kirim sebagai anonim</span>
           </label>
         </div>
 
-        <div class="field">
-          <label class="field-title">RATING KEPUASAN</label>
-          <div class="stamps" id="starRating">
-            <button type="button" class="stamp-btn" data-value="1" title="Sangat Buruk">😡</button>
-            <button type="button" class="stamp-btn" data-value="2" title="Buruk">🙁</button>
-            <button type="button" class="stamp-btn" data-value="3" title="Cukup">😐</button>
-            <button type="button" class="stamp-btn" data-value="4" title="Puas">🙂</button>
-            <button type="button" class="stamp-btn active" data-value="5" title="Sangat Puas">😍</button>
+        <div class="form-group">
+          <label class="label-title">RATING KEPUASAN</label>
+          <div class="rating-grid" id="starRating">
+            <button type="button" class="rate-btn" data-value="1">😡</button>
+            <button type="button" class="rate-btn" data-value="2">🙁</button>
+            <button type="button" class="rate-btn" data-value="3">😐</button>
+            <button type="button" class="rate-btn" data-value="4">🙂</button>
+            <button type="button" class="rate-btn active" data-value="5">😍</button>
           </div>
           <input type="hidden" id="rating" name="rating" value="5">
-          <div class="rating-text" id="ratingDesc">😍 Sangat Puas (5/5)</div>
+          <div class="rate-caption" id="ratingDesc">😍 Sangat Puas (5/5)</div>
         </div>
 
-        <div class="field">
-          <label class="field-title" for="pesan">KRITIK DAN SARAN</label>
-          <textarea id="pesan" name="pesan" placeholder="Tuliskan kritik dan saran kamu di sini..." required maxlength="1000"></textarea>
+        <div class="form-group">
+          <label class="label-title" for="pesan">KRITIK DAN SARAN</label>
+          <textarea id="pesan" name="pesan" placeholder="Tuliskan masukan kamu di sini..." required maxlength="1000"></textarea>
           <div class="char-counter"><span id="charCount">0</span>/1000</div>
         </div>
 
         <button type="submit" id="submitBtn" class="btn-submit">
-          <span class="btn-text">Kirim Masukan</span>
+          <span class="btn-text">KIRIM MASUKAN</span>
           <span class="btn-spinner hidden"></span>
         </button>
 
       </form>
 
-      <div id="alertBox" class="alert hidden"></div>
+      <div id="alertBox" class="alert-box hidden"></div>
 
-      <footer class="footer">
+      <!-- Shortcut Portofolio -->
+      <div class="portal-shortcut">
+        <div class="portal-card">
+          <div class="portal-left">
+            <div class="portal-icon">
+              <!-- Ikon Galaksi Spiral -->
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 2C6.5 2 2 6.5 2 12c0 3 1.3 5.7 3.5 7.5"></path>
+                <path d="M22 12c0-3-1.3-5.7-3.5-7.5"></path>
+                <path d="M12 22c5.5 0 10-4.5 10-10"></path>
+              </svg>
+            </div>
+            <div class="portal-text">
+              <span>Portofolio?</span>
+              <a href="https://myporto-beige-theta.vercel.app" target="_blank" rel="noopener noreferrer" class="moon-link">
+                _moonwh1sper
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M7 17l9.2-9.2M17 17V8H8"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="footer-meta">
         <p>
           Created by
-          <a href="https://www.instagram.com/_moonwh1sper" target="_blank" rel="noopener noreferrer" class="creator-link">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+          <a href="https://www.instagram.com/_moonwh1sper" target="_blank" rel="noopener noreferrer" class="ig-link">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
             </svg>
             <span>_moonwh1sper</span>
           </a>
         </p>
-        <div class="sub-credit">
+        <div class="sub-note">
           <em>International Class at Nusa Putra University</em>
         </div>
       </footer>
@@ -512,10 +615,211 @@
   </div>
 </main>
 
+<!-- =================================================================
+     ENGINE 1: SPIRAL GALAXY 3D PARTICLES (THREE.JS)
+     ================================================================= -->
+<script>
+  const galaxyCanvas = document.getElementById('galaxy-canvas');
+  const scene = new THREE.Scene();
+
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+  const renderer = new THREE.WebGLRenderer({ canvas: galaxyCanvas, alpha: true, antialias: false });
+
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+
+  // Posisi kamera melihat spiral galaksi dari atas miring
+  camera.position.set(0, 3.8, 3.2);
+  camera.lookAt(0, 0, 0);
+
+  // Parameter Galaksi
+  const parameters = {
+    count: 3200,          // Jumlah partikel dioptimasi untuk performa Android
+    size: 0.015,
+    radius: 4.8,
+    branches: 3,          // 3 Lengan spiral galaksi
+    spin: 1.2,
+    randomness: 0.5,
+    power: 3.5,
+    insideColor: '#ffffff',
+    middleColor: '#00f0ff',
+    outsideColor: '#7c3aed'
+  };
+
+  const geometry = new THREE.BufferGeometry();
+  const positions = new Float32Array(parameters.count * 3);
+  const colors = new Float32Array(parameters.count * 3);
+
+  const colorInside = new THREE.Color(parameters.insideColor);
+  const colorMiddle = new THREE.Color(parameters.middleColor);
+  const colorOutside = new THREE.Color(parameters.outsideColor);
+
+  for (let i = 0; i < parameters.count; i++) {
+    const i3 = i * 3;
+
+    // Posisi partikel di sepanjang radius dan cabang spiral
+    const radius = Math.random() * parameters.radius;
+    const spinAngle = radius * parameters.spin;
+    const branchAngle = ((i % parameters.branches) / parameters.branches) * Math.PI * 2;
+
+    const randomX = Math.pow(Math.random(), parameters.power) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+    const randomY = Math.pow(Math.random(), parameters.power) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius * 0.5;
+    const randomZ = Math.pow(Math.random(), parameters.power) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+
+    positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
+    positions[i3 + 1] = randomY;
+    positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+
+    // Gradasi Warna dari Pusat Galaksi ke Luar
+    let mixedColor;
+    if (radius < parameters.radius * 0.3) {
+      mixedColor = colorInside.clone().lerp(colorMiddle, radius / (parameters.radius * 0.3));
+    } else {
+      mixedColor = colorMiddle.clone().lerp(colorOutside, (radius - parameters.radius * 0.3) / (parameters.radius * 0.7));
+    }
+
+    colors[i3] = mixedColor.r;
+    colors[i3 + 1] = mixedColor.g;
+    colors[i3 + 2] = mixedColor.b;
+  }
+
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+  const material = new THREE.PointsMaterial({
+    size: parameters.size,
+    sizeAttenuation: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    vertexColors: true
+  });
+
+  const galaxyPoints = new THREE.Points(geometry, material);
+  scene.add(galaxyPoints);
+
+  // Pusat Galaksi (Galactic Core Glow Sphere)
+  const coreGeom = new THREE.SphereGeometry(0.3, 16, 16);
+  const coreMat = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.95
+  });
+  const coreMesh = new THREE.Mesh(coreGeom, coreMat);
+  scene.add(coreMesh);
+
+  // Animasi Rotasi Galaksi
+  const clock = new THREE.Clock();
+
+  function animateGalaxy() {
+    requestAnimationFrame(animateGalaxy);
+    const elapsedTime = clock.getElapsedTime();
+
+    // Rotasi perlahan lengan galaksi
+    galaxyPoints.rotation.y = elapsedTime * 0.04;
+    coreMesh.rotation.y = elapsedTime * 0.08;
+
+    renderer.render(scene, camera);
+  }
+  animateGalaxy();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
+
+<!-- =================================================================
+     ENGINE 2: HUJAN BINTANG JATUH (METEOR CANVAS 2D)
+     ================================================================= -->
+<script>
+  const meteorCanvas = document.getElementById('meteor-canvas');
+  const mCtx = meteorCanvas.getContext('2d');
+
+  function resizeMeteor() {
+    meteorCanvas.width = window.innerWidth;
+    meteorCanvas.height = window.innerHeight;
+  }
+  resizeMeteor();
+  window.addEventListener('resize', resizeMeteor);
+
+  class Meteor {
+    constructor() {
+      this.reset();
+    }
+
+    reset() {
+      this.x = Math.random() * meteorCanvas.width * 1.2;
+      this.y = Math.random() * -60;
+      this.length = Math.random() * 80 + 40;
+      this.speed = Math.random() * 9 + 11;
+      this.size = Math.random() * 1.4 + 0.8;
+      this.angle = Math.PI / 3.8;
+      this.opacity = Math.random() * 0.7 + 0.3;
+      this.delay = Math.random() * 130;
+
+      const colors = ['#00f0ff', '#ffffff', '#a855f7', '#38bdf8'];
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    update() {
+      if (this.delay > 0) {
+        this.delay--;
+        return;
+      }
+
+      this.x -= Math.cos(this.angle) * this.speed;
+      this.y += Math.sin(this.angle) * this.speed;
+
+      if (this.x < -80 || this.y > meteorCanvas.height + 80) {
+        this.reset();
+      }
+    }
+
+    draw() {
+      if (this.delay > 0) return;
+
+      mCtx.save();
+      mCtx.lineWidth = this.size;
+      mCtx.lineCap = 'round';
+      mCtx.globalAlpha = this.opacity;
+
+      const tailX = this.x + Math.cos(this.angle) * this.length;
+      const tailY = this.y - Math.sin(this.angle) * this.length;
+
+      const grad = mCtx.createLinearGradient(this.x, this.y, tailX, tailY);
+      grad.addColorStop(0, this.color);
+      grad.addColorStop(1, 'transparent');
+
+      mCtx.strokeStyle = grad;
+      mCtx.beginPath();
+      mCtx.moveTo(this.x, this.y);
+      mCtx.lineTo(tailX, tailY);
+      mCtx.stroke();
+      mCtx.restore();
+    }
+  }
+
+  const meteors = Array.from({ length: 6 }, () => new Meteor());
+
+  function animateMeteors() {
+    mCtx.clearRect(0, 0, meteorCanvas.width, meteorCanvas.height);
+    meteors.forEach(m => {
+      m.update();
+      m.draw();
+    });
+    requestAnimationFrame(animateMeteors);
+  }
+  animateMeteors();
+</script>
+
+<!-- =================================================================
+     ENGINE 3: LOGIKA FEEDBACK & FORM
+     ================================================================= -->
 <script>
   const namaInput = document.getElementById('nama');
   const anonimCheckbox = document.getElementById('anonimCheckbox');
-  const stamps = document.querySelectorAll('.stamp-btn');
+  const rateButtons = document.querySelectorAll('.rate-btn');
   const ratingInput = document.getElementById('rating');
   const ratingDesc = document.getElementById('ratingDesc');
   const pesanInput = document.getElementById('pesan');
@@ -536,7 +840,6 @@
     5: '😍 Sangat Puas (5/5)'
   };
 
-  // 1. Cek apakah perangkat sudah pernah mengirim pesan
   if (localStorage.getItem('moonwhisper_feedback_submitted') === 'true') {
     form.classList.add('hidden');
     headerSection.classList.add('hidden');
@@ -560,16 +863,16 @@
   function setRating(val) {
     ratingInput.value = val;
     ratingDesc.textContent = ratingLabels[val];
-    stamps.forEach(s => {
-      const v = parseInt(s.getAttribute('data-value'), 10);
-      s.classList.toggle('active', v === val);
+    rateButtons.forEach(btn => {
+      const v = parseInt(btn.getAttribute('data-value'), 10);
+      btn.classList.toggle('active', v === val);
     });
   }
 
   setRating(5);
 
-  stamps.forEach(s => {
-    s.addEventListener('click', () => setRating(parseInt(s.getAttribute('data-value'), 10)));
+  rateButtons.forEach(btn => {
+    btn.addEventListener('click', () => setRating(parseInt(btn.getAttribute('data-value'), 10)));
   });
 
   pesanInput.addEventListener('input', () => {
@@ -578,7 +881,7 @@
 
   function showAlert(message, type) {
     alertBox.textContent = message;
-    alertBox.className = `alert ${type}`;
+    alertBox.className = `alert-box ${type}`;
     alertBox.classList.remove('hidden');
   }
 
@@ -610,7 +913,6 @@
         })
       });
 
-      // Mencegah error 'Unexpected end of JSON input' jika backend mengirim body kosong
       const text = await res.text();
       let data = {};
 
@@ -624,10 +926,7 @@
         throw new Error(data.error || `Gagal menyimpan data (Status: ${res.status})`);
       }
 
-      // 2. Kunci status di perangkat
       localStorage.setItem('moonwhisper_feedback_submitted', 'true');
-
-      // Tampilkan pesan sukses sebentar lalu sembunyikan form
       showAlert('✨ Terima kasih! Masukan kamu berhasil disimpan.', 'success');
 
       setTimeout(() => {
