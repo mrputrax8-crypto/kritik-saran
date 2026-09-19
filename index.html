@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Kritik & Saran // Blue Cyber Galaxy</title>
+<title>Kritik & Saran</title>
 
 <!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -164,10 +164,102 @@
     50% { transform: scale(0.6); opacity: 0.4; }
   }
 
+  /* =========================================================
+     NETWORK TELEMETRY HUD (IP & KECEPATAN INTERNET)
+     ========================================================= */
+  .net-telemetry-box {
+    background: rgba(2, 6, 23, 0.7);
+    border: 1px solid rgba(0, 240, 255, 0.22);
+    border-radius: 16px;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+    box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.05);
+  }
+
+  .net-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.12);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+  }
+
+  .net-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--blue-ice);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .net-signal {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: #34d399;
+  }
+
+  .signal-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 8px #34d399;
+    animation: signalPulse 1.4s infinite;
+  }
+
+  @keyframes signalPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .net-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .net-stat-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 8px 10px;
+  }
+
+  .net-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .net-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    word-break: break-all;
+  }
+
+  .net-value.highlight {
+    color: var(--blue-ice);
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+  }
+
   /* Header Box dengan Blue Shimmer Text */
   .header-box {
     text-align: center;
-    margin-bottom: 22px;
+    margin-bottom: 20px;
   }
 
   .header-box h1 {
@@ -573,6 +665,45 @@
         GALAXY
       </span>
 
+      <!-- =========================================================
+           BOX TELEMETRY JARINGAN (IP & SPEED DETECTOR)
+           ========================================================= -->
+      <div class="net-telemetry-box">
+        <div class="net-header">
+          <div class="net-title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+              <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+              <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+              <circle cx="12" cy="20" r="1"></circle>
+            </svg>
+            VISITOR TELEMETRY
+          </div>
+          <div class="net-signal">
+            <span class="signal-dot"></span>
+            ONLINE
+          </div>
+        </div>
+
+        <div class="net-grid">
+          <!-- IP Address -->
+          <div class="net-stat-item">
+            <span class="net-label">IP ADDRESS</span>
+            <div class="net-value" id="userIp">
+              <span>Scanning...</span>
+            </div>
+          </div>
+
+          <!-- Network Speed -->
+          <div class="net-stat-item">
+            <span class="net-label">SPEED / PING</span>
+            <div class="net-value highlight" id="userSpeed">
+              <span>Testing...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <header class="header-box" id="headerSection">
         <h1>Kritik & Saran</h1>
         <p>Tulis apa saja yang perlu diperbaiki.</p>
@@ -672,7 +803,9 @@
   </div>
 </main>
 
-<!-- THREE.JS GALAXY ENGINE (MONOCHROME BLUE SPECTRUM) -->
+<!-- =================================================================
+     ENGINE 1: SPIRAL GALAXY 3D PARTICLES (THREE.JS)
+     ================================================================= -->
 <script>
   const galaxyCanvas = document.getElementById('galaxy-canvas');
   const scene = new THREE.Scene();
@@ -686,7 +819,6 @@
   camera.position.set(0, 3.8, 3.2);
   camera.lookAt(0, 0, 0);
 
-  // Palet Khusus Spektrum Biru Cyber
   const parameters = {
     count: 3500,
     size: 0.015,
@@ -749,7 +881,6 @@
   const galaxyPoints = new THREE.Points(geometry, material);
   scene.add(galaxyPoints);
 
-  // Core Biru Putih Bersinar
   const coreGeom = new THREE.SphereGeometry(0.3, 16, 16);
   const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.95 });
   const coreMesh = new THREE.Mesh(coreGeom, coreMat);
@@ -775,7 +906,9 @@
   });
 </script>
 
-<!-- METEOR BIRU / CYAN ENGINE -->
+<!-- =================================================================
+     ENGINE 2: METEOR BIRU CANVAS
+     ================================================================= -->
 <script>
   const meteorCanvas = document.getElementById('meteor-canvas');
   const mCtx = meteorCanvas.getContext('2d');
@@ -802,7 +935,6 @@
       this.opacity = Math.random() * 0.7 + 0.3;
       this.delay = Math.random() * 130;
 
-      // Palet Meteor Khusus Biru
       const colors = ['#00f0ff', '#ffffff', '#38bdf8', '#60a5fa'];
       this.color = colors[Math.floor(Math.random() * colors.length)];
     }
@@ -858,7 +990,78 @@
   animateMeteors();
 </script>
 
-<!-- FORM LOGIC ENGINE -->
+<!-- =================================================================
+     ENGINE 3: LIVE IP & INTERNET SPEED DETECTOR
+     ================================================================= -->
+<script>
+  const userIpEl = document.getElementById('userIp');
+  const userSpeedEl = document.getElementById('userSpeed');
+
+  // 1. Dapatkan Alamat IP Publik Pengunjung
+  async function fetchVisitorIP() {
+    try {
+      const res = await fetch('https://api.ipify.org?format=json');
+      const data = await res.json();
+      userIpEl.innerHTML = `<span>${data.ip}</span>`;
+    } catch (err) {
+      try {
+        // Backup API jika ipify sibuk
+        const res2 = await fetch('https://ipapi.co/json/');
+        const data2 = await res2.json();
+        userIpEl.innerHTML = `<span>${data2.ip}</span>`;
+      } catch (err2) {
+        userIpEl.innerHTML = `<span>127.0.0.1 (Masked)</span>`;
+      }
+    }
+  }
+
+  // 2. Hitung Latency Ping & Kecepatan Download Aktual
+  async function testInternetSpeed() {
+    // Pengujian Ping (Latency)
+    const pingStart = performance.now();
+    try {
+      await fetch('https://www.google.com/favicon.ico', { mode: 'no-cors', cache: 'no-store' });
+    } catch (e) {}
+    const pingTime = Math.round(performance.now() - pingStart);
+
+    // Pengujian Download Bandwidth (Mengunduh file sampel acak ~200KB)
+    const testImage = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&auto=format&fit=crop&q=60';
+    const downloadStart = performance.now();
+    
+    try {
+      const response = await fetch(testImage + '&nocache=' + Math.random(), { cache: 'no-store' });
+      const blob = await response.blob();
+      const downloadEnd = performance.now();
+
+      const durationSec = (downloadEnd - downloadStart) / 1000;
+      const bitsLoaded = blob.size * 8;
+      const speedBps = bitsLoaded / durationSec;
+      const speedMbps = (speedBps / (1024 * 1024)).toFixed(1);
+
+      if (speedMbps > 0.1) {
+        userSpeedEl.innerHTML = `<span>${speedMbps} Mbps <small style="color:var(--text-secondary);font-size:10px;">(${pingTime}ms)</small></span>`;
+      } else {
+        const speedKbps = Math.round(speedBps / 1024);
+        userSpeedEl.innerHTML = `<span>${speedKbps} Kbps <small style="color:var(--text-secondary);font-size:10px;">(${pingTime}ms)</small></span>`;
+      }
+    } catch (err) {
+      // Fallback perkiraan browser Network Information API
+      if (navigator.connection && navigator.connection.downlink) {
+        userSpeedEl.innerHTML = `<span>~${navigator.connection.downlink} Mbps <small style="color:var(--text-secondary);font-size:10px;">(${pingTime}ms)</small></span>`;
+      } else {
+        userSpeedEl.innerHTML = `<span>Active <small style="color:var(--text-secondary);font-size:10px;">(${pingTime}ms)</small></span>`;
+      }
+    }
+  }
+
+  // Jalankan Telemetri saat halaman siap
+  fetchVisitorIP();
+  testInternetSpeed();
+</script>
+
+<!-- =================================================================
+     ENGINE 4: FORM LOGIC & LOCALSTORAGE
+     ================================================================= -->
 <script>
   const namaInput = document.getElementById('nama');
   const anonimCheckbox = document.getElementById('anonimCheckbox');
