@@ -77,7 +77,7 @@
     opacity: 0; /* Sembunyikan galaksi saat Light Mode */
   }
 
-  /* KEDUA SAKLAR DI SEBELAH KANAN */
+  /* KEDUA SAKLAR DI SEBELAH KANAN (BAHASA & TEMA) */
   .settings-bar-right {
     position: fixed;
     top: 16px;
@@ -946,7 +946,7 @@
       headerTitle: "Kritik & Saran",
       headerDesc: "Tulis apa saja yang perlu diperbaiki.",
       lockedTitle: "Masukan Terkirim",
-      lockedDesc: "Terima kasih! Kamu sudah pernah mengirimkan kritik dan saran🙌",
+      lockedDesc: "Terima kasih! Kamu sudah pernah mengirimkan kritik dan saran dari perangkat ini.",
       labelName: "NAMA",
       namePlaceholder: "Ketik nama kamu",
       labelAnon: "Kirim sebagai anonim",
@@ -1044,7 +1044,7 @@
     updateTexts();
   }
 
-  // Load Saved Preferences
+  // Load Saved Preferences on Startup
   if (localStorage.getItem('user_lang') === 'en') {
     currentLang = 'en';
     document.getElementById('langSwitch').checked = true;
@@ -1053,6 +1053,8 @@
     document.body.classList.add('light-mode');
     document.getElementById('themeSwitch').checked = true;
   }
+  
+  // Ensure texts match current state immediately
   updateTexts();
 </script>
 
