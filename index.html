@@ -28,7 +28,7 @@
     --input-bg: rgba(4, 8, 20, 0.85);
   }
 
-  /* LIGHT MODE DENGAN RGB BIRU SOFT */
+  /* LIGHT MODE DENGAN ELEMEN RGB BIRU SOFT MENYELURUH */
   body.light-mode {
     --bg-current: #f1f5f9;
     --panel-current: rgba(255, 255, 255, 0.92);
@@ -77,19 +77,15 @@
     opacity: 0; /* Sembunyikan galaksi saat Light Mode */
   }
 
-  /* PENGATUR POSISI SAKLAR KIRI DAN KANAN */
-  .settings-bar-left {
-    position: fixed;
-    top: 16px;
-    left: 16px;
-    z-index: 100;
-  }
-
+  /* KEDUA SAKLAR DI SEBELAH KANAN */
   .settings-bar-right {
     position: fixed;
     top: 16px;
     right: 16px;
     z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
   .toggle-group {
@@ -191,7 +187,7 @@
     100% { background-position: 0% 50%; }
   }
 
-  /* LIGHT MODE DENGAN ANIMASI RGB KHUSUS WARNA BIRU SOFT */
+  /* LIGHT MODE DENGAN ANIMASI RGB BIRU SOFT MENYELURUH (BORDER, TOMBOL, IKON, DLL) */
   body.light-mode .galaxy-card {
     background: linear-gradient(90deg, #38bdf8, #0284c7, #7dd3fc, #0ea5e9, #38bdf8);
     background-size: 400% 400%;
@@ -232,8 +228,11 @@
   }
 
   body.light-mode .galaxy-badge {
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.15), rgba(14, 165, 233, 0.25), rgba(56, 189, 248, 0.15));
+    background-size: 200% 100%;
+    animation: softBlueRgbAnim 4s linear infinite;
     color: #0284c7;
-    background: rgba(14, 165, 233, 0.08);
+    border-color: rgba(14, 165, 233, 0.4);
   }
 
   .badge-core {
@@ -243,6 +242,11 @@
     background: var(--blue-ice);
     box-shadow: 0 0 8px var(--blue-ice);
     animation: coreBlink 1.8s infinite;
+  }
+
+  body.light-mode .badge-core {
+    background: #0284c7;
+    box-shadow: 0 0 8px #0284c7;
   }
 
   @keyframes coreBlink {
@@ -322,7 +326,11 @@
   }
 
   body.light-mode .mini-value.highlight {
-    color: #0284c7;
+    background: linear-gradient(90deg, #38bdf8, #0284c7, #7dd3fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 100%;
+    animation: softBlueRgbAnim 4s linear infinite;
     text-shadow: none;
   }
 
@@ -438,7 +446,9 @@
   }
 
   body.light-mode .switch-row input:checked ~ .custom-switch {
-    background: linear-gradient(90deg, #38bdf8, #0284c7);
+    background: linear-gradient(90deg, #38bdf8, #0284c7, #7dd3fc);
+    background-size: 200% 100%;
+    animation: softBlueRgbAnim 4s linear infinite;
   }
 
   .switch-row input:checked ~ .custom-switch::after {
@@ -483,7 +493,9 @@
   }
 
   body.light-mode .rate-btn.active {
-    background: linear-gradient(135deg, #38bdf8, #0284c7);
+    background: linear-gradient(90deg, #38bdf8, #0284c7, #7dd3fc);
+    background-size: 200% 100%;
+    animation: softBlueRgbAnim 4s linear infinite;
     box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
     color: #fff;
   }
@@ -497,7 +509,11 @@
   }
 
   body.light-mode .rate-caption {
-    color: #0284c7;
+    background: linear-gradient(90deg, #38bdf8, #0284c7, #7dd3fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 100%;
+    animation: softBlueRgbAnim 4s linear infinite;
     text-shadow: none;
   }
 
@@ -540,7 +556,9 @@
 
   body.light-mode .btn-submit {
     color: #fff;
-    background: linear-gradient(90deg, #38bdf8, #0284c7);
+    background: linear-gradient(90deg, #38bdf8, #0284c7, #7dd3fc, #0ea5e9);
+    background-size: 400% 400%;
+    animation: softBlueRgbAnim 4s linear infinite;
     box-shadow: 0 4px 15px rgba(14, 165, 233, 0.35);
   }
 
@@ -619,7 +637,9 @@
 
   body.light-mode .locked-icon {
     color: #fff;
-    background: linear-gradient(135deg, #38bdf8, #0284c7);
+    background: linear-gradient(90deg, #38bdf8, #0284c7, #7dd3fc);
+    background-size: 200% 100%;
+    animation: softBlueRgbAnim 4s linear infinite;
   }
 
   #lockedState h2 {
@@ -699,7 +719,11 @@
   }
 
   body.light-mode .moon-link {
-    color: #0284c7;
+    background: linear-gradient(90deg, #38bdf8, #0284c7, #7dd3fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 100%;
+    animation: softBlueRgbAnim 4s linear infinite;
   }
 
   .moon-link:hover {
@@ -733,7 +757,11 @@
   }
 
   body.light-mode .ig-link {
-    color: #0284c7;
+    background: linear-gradient(90deg, #38bdf8, #0284c7, #7dd3fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 100%;
+    animation: softBlueRgbAnim 4s linear infinite;
   }
 
   .sub-note {
@@ -746,8 +774,9 @@
 
 <body>
 
-<!-- SETTINGS BAR SEBELAH KIRI (SAKLAR BAHASA) -->
-<div class="settings-bar-left">
+<!-- KEDUA SAKLAR DI SEBELAH KANAN (BAHASA & TEMA) -->
+<div class="settings-bar-right">
+  <!-- Toggle Bahasa ID / EN -->
   <div class="toggle-group">
     <span class="toggle-label" id="langText">ID 🇮🇩</span>
     <label class="switch">
@@ -755,10 +784,7 @@
       <span class="slider"></span>
     </label>
   </div>
-</div>
-
-<!-- SETTINGS BAR SEBELAH KANAN (SAKLAR THEME DARK/LIGHT) -->
-<div class="settings-bar-right">
+  <!-- Toggle Dark / Light Mode -->
   <div class="toggle-group">
     <span class="toggle-label" id="themeText">DARK</span>
     <label class="switch">
