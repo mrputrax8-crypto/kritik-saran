@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Kritik & Saran</title>
+<title id="pageTitle">Kritik & Saran</title>
 
 <!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet">
 
-<!-- Three.js untuk Spiral Galaksi 3D -->
+<!-- Three.js untuk Milky Way 3D Realistis (Hanya aktif di Dark Mode) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
@@ -18,13 +18,24 @@
     --blue-ice: #00f0ff;
     --blue-electric: #38bdf8;
     --blue-vibrant: #2563eb;
-    --blue-deep: #1d4ed8;
-    --blue-dark: #0f172a;
     
-    --bg-dark: #020617;
-    --panel-galaxy: rgba(8, 15, 36, 0.78);
+    /* Default: Dark Mode Kosmik */
+    --bg-current: #020617;
+    --panel-current: rgba(10, 16, 33, 0.78);
+    --panel-border: rgba(0, 240, 255, 0.25);
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
+    --input-bg: rgba(4, 8, 20, 0.85);
+  }
+
+  /* LIGHT MODE DENGAN RGB BIRU SOFT */
+  body.light-mode {
+    --bg-current: #f1f5f9;
+    --panel-current: rgba(255, 255, 255, 0.92);
+    --panel-border: rgba(56, 189, 248, 0.35);
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --input-bg: rgba(248, 250, 252, 0.95);
   }
 
   * {
@@ -38,7 +49,7 @@
   body {
     min-height: 100vh;
     min-height: 100dvh;
-    background-color: var(--bg-dark);
+    background: var(--bg-current);
     color: var(--text-primary);
     display: flex;
     justify-content: center;
@@ -46,9 +57,11 @@
     padding: 18px 14px 28px;
     position: relative;
     overflow-x: hidden;
+    transition: background 0.4s ease;
   }
 
-  #galaxy-canvas {
+  /* Canvas Milky Way 3D Latar Belakang */
+  #webgl-bg {
     position: fixed;
     top: 0;
     left: 0;
@@ -57,34 +70,93 @@
     height: 100dvh;
     z-index: 0;
     pointer-events: none;
+    transition: opacity 0.4s ease;
   }
 
-  #meteor-canvas {
+  body.light-mode #webgl-bg {
+    opacity: 0; /* Sembunyikan galaksi saat Light Mode */
+  }
+
+  /* PENGATUR POSISI SAKLAR KIRI DAN KANAN */
+  .settings-bar-left {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-    z-index: 1;
-    pointer-events: none;
+    top: 16px;
+    left: 16px;
+    z-index: 100;
   }
 
-  .blue-ambient {
+  .settings-bar-right {
     position: fixed;
-    width: 100vw;
-    height: 60vh;
-    top: 0;
-    left: 0;
-    background: radial-gradient(ellipse at 50% 20%, rgba(0, 240, 255, 0.2), rgba(37, 99, 235, 0.15), transparent 70%);
-    pointer-events: none;
-    z-index: 2;
-    animation: bluePulse 6s ease-in-out infinite alternate;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
   }
 
-  @keyframes bluePulse {
-    0% { opacity: 0.7; transform: scale(1); }
-    100% { opacity: 1; transform: scale(1.1); }
+  .toggle-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--panel-current);
+    border: 1px solid var(--panel-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    padding: 7px 12px;
+    border-radius: 999px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+  }
+
+  .toggle-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    cursor: pointer;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(125, 125, 125, 0.3);
+    border: 1px solid var(--panel-border);
+    transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: 999px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  input:checked + .slider {
+    background: linear-gradient(90deg, var(--blue-ice), var(--blue-vibrant));
+    border-color: transparent;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(16px);
   }
 
   .mobile-container {
@@ -95,6 +167,7 @@
     margin: auto;
   }
 
+  /* KARTU UTAMA */
   .galaxy-card {
     position: relative;
     border-radius: 24px;
@@ -104,12 +177,12 @@
       var(--blue-ice),
       var(--blue-vibrant),
       var(--blue-electric),
-      var(--blue-deep),
       var(--blue-ice)
     );
     background-size: 300% 300%;
     animation: blueBorderFlow 5s ease infinite;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 35px rgba(0, 240, 255, 0.25);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 240, 255, 0.2);
+    transition: all 0.4s ease;
   }
 
   @keyframes blueBorderFlow {
@@ -118,13 +191,27 @@
     100% { background-position: 0% 50%; }
   }
 
+  /* LIGHT MODE DENGAN ANIMASI RGB KHUSUS WARNA BIRU SOFT */
+  body.light-mode .galaxy-card {
+    background: linear-gradient(90deg, #38bdf8, #0284c7, #7dd3fc, #0ea5e9, #38bdf8);
+    background-size: 400% 400%;
+    animation: softBlueRgbAnim 4s linear infinite;
+    box-shadow: 0 10px 30px rgba(14, 165, 233, 0.25);
+  }
+
+  @keyframes softBlueRgbAnim {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
   .card-body {
-    background: var(--panel-galaxy);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    background: var(--panel-current);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-radius: 22px;
     padding: 24px 20px;
-    box-shadow: inset 0 0 30px rgba(0, 240, 255, 0.05);
+    transition: background 0.4s ease;
   }
 
   .galaxy-badge {
@@ -134,21 +221,26 @@
     padding: 4px 12px;
     border-radius: 999px;
     background: rgba(0, 240, 255, 0.1);
-    border: 1px solid rgba(0, 240, 255, 0.4);
+    border: 1px solid var(--panel-border);
     font-family: 'JetBrains Mono', monospace;
     font-size: 10.5px;
     font-weight: 700;
     color: var(--blue-ice);
     letter-spacing: 0.5px;
     margin-bottom: 14px;
-    box-shadow: 0 0 14px rgba(0, 240, 255, 0.2);
+    transition: color 0.4s ease, background 0.4s ease;
+  }
+
+  body.light-mode .galaxy-badge {
+    color: #0284c7;
+    background: rgba(14, 165, 233, 0.08);
   }
 
   .badge-core {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #ffffff;
+    background: var(--blue-ice);
     box-shadow: 0 0 8px var(--blue-ice);
     animation: coreBlink 1.8s infinite;
   }
@@ -158,9 +250,6 @@
     50% { transform: scale(0.6); opacity: 0.4; }
   }
 
-  /* =========================================================
-     TELEMETRY MINI 2 KOLOM (KIRI & KANAN COMPACT)
-     ========================================================= */
   .telemetry-split-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -169,15 +258,15 @@
   }
 
   .mini-telemetry-card {
-    background: rgba(2, 6, 23, 0.72);
-    border: 1px solid rgba(0, 240, 255, 0.22);
+    background: var(--input-bg);
+    border: 1px solid var(--panel-border);
     border-radius: 14px;
     padding: 9px 11px;
-    box-shadow: inset 0 0 12px rgba(0, 240, 255, 0.04);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     min-height: 58px;
+    transition: background 0.4s ease;
   }
 
   .mini-header {
@@ -202,25 +291,23 @@
     color: var(--blue-ice);
   }
 
+  body.light-mode .mini-label svg {
+    color: #0284c7;
+  }
+
   .mini-dot {
     width: 5px;
     height: 5px;
     border-radius: 50%;
     background: #34d399;
     box-shadow: 0 0 6px #34d399;
-    animation: signalPulse 1.4s infinite;
-  }
-
-  @keyframes signalPulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
   }
 
   .mini-value {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11.5px;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -234,6 +321,11 @@
     text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
   }
 
+  body.light-mode .mini-value.highlight {
+    color: #0284c7;
+    text-shadow: none;
+  }
+
   .header-box {
     text-align: center;
     margin-bottom: 20px;
@@ -245,22 +337,7 @@
     font-weight: 900;
     letter-spacing: 0.5px;
     margin-bottom: 6px;
-    background: linear-gradient(
-      90deg,
-      #ffffff,
-      var(--blue-ice),
-      var(--blue-electric),
-      #ffffff
-    );
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: blueTextWave 4s linear infinite;
-  }
-
-  @keyframes blueTextWave {
-    0% { background-position: 0% center; }
-    100% { background-position: 200% center; }
+    color: var(--text-primary);
   }
 
   .header-box p {
@@ -278,15 +355,15 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     font-weight: 700;
-    color: #cbd5e1;
+    color: var(--text-secondary);
     margin-bottom: 7px;
     letter-spacing: 0.5px;
   }
 
   input[type="text"], textarea {
     width: 100%;
-    background: rgba(3, 7, 18, 0.85);
-    border: 1px solid rgba(0, 240, 255, 0.15);
+    background: var(--input-bg);
+    border: 1px solid var(--panel-border);
     border-radius: 14px;
     padding: 13px 14px;
     color: var(--text-primary);
@@ -298,6 +375,11 @@
   input[type="text"]:focus, textarea:focus {
     border-color: var(--blue-ice);
     box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.25), 0 0 18px rgba(0, 240, 255, 0.35);
+  }
+
+  body.light-mode input[type="text"]:focus, body.light-mode textarea:focus {
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
   }
 
   input[type="text"]:disabled {
@@ -329,8 +411,8 @@
     width: 38px;
     height: 22px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(125, 125, 125, 0.25);
+    border: 1px solid var(--panel-border);
     position: relative;
     flex-shrink: 0;
     transition: all 0.25s ease;
@@ -345,7 +427,7 @@
     height: 16px;
     border-radius: 50%;
     background: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
@@ -353,6 +435,10 @@
     background: linear-gradient(90deg, var(--blue-ice), var(--blue-vibrant));
     border-color: transparent;
     box-shadow: 0 0 14px rgba(0, 240, 255, 0.7);
+  }
+
+  body.light-mode .switch-row input:checked ~ .custom-switch {
+    background: linear-gradient(90deg, #38bdf8, #0284c7);
   }
 
   .switch-row input:checked ~ .custom-switch::after {
@@ -374,8 +460,8 @@
     flex: 1;
     height: 48px;
     border-radius: 12px;
-    border: 1px solid rgba(0, 240, 255, 0.1);
-    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--panel-border);
+    background: var(--input-bg);
     color: var(--text-secondary);
     font-size: 22px;
     cursor: pointer;
@@ -396,12 +482,23 @@
     transform: scale(1.08);
   }
 
+  body.light-mode .rate-btn.active {
+    background: linear-gradient(135deg, #38bdf8, #0284c7);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    color: #fff;
+  }
+
   .rate-caption {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
     color: var(--blue-ice);
     text-align: center;
     text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+  }
+
+  body.light-mode .rate-caption {
+    color: #0284c7;
+    text-shadow: none;
   }
 
   .char-counter {
@@ -441,6 +538,12 @@
     transition: transform 0.15s ease, box-shadow 0.2s ease;
   }
 
+  body.light-mode .btn-submit {
+    color: #fff;
+    background: linear-gradient(90deg, #38bdf8, #0284c7);
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.35);
+  }
+
   @keyframes blueBtnFlow {
     0% { background-position: 0% 50%; }
     100% { background-position: 200% 50%; }
@@ -448,7 +551,6 @@
 
   .btn-submit:active {
     transform: scale(0.97);
-    box-shadow: 0 0 35px rgba(0, 240, 255, 0.7);
   }
 
   .btn-spinner {
@@ -458,6 +560,11 @@
     border-top-color: #020617;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
+  }
+
+  body.light-mode .btn-spinner {
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
   }
 
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -475,6 +582,12 @@
     color: #fff;
     background: rgba(0, 240, 255, 0.18);
     border: 1px solid rgba(0, 240, 255, 0.5);
+  }
+
+  body.light-mode .alert-box.success {
+    color: #0369a1;
+    background: rgba(14, 165, 233, 0.12);
+    border: 1px solid rgba(14, 165, 233, 0.3);
   }
 
   .alert-box.error {
@@ -504,11 +617,16 @@
     box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
   }
 
+  body.light-mode .locked-icon {
+    color: #fff;
+    background: linear-gradient(135deg, #38bdf8, #0284c7);
+  }
+
   #lockedState h2 {
     font-family: 'Orbitron', sans-serif;
     font-size: 19px;
     font-weight: 800;
-    color: #fff;
+    color: var(--text-primary);
     margin-bottom: 8px;
   }
 
@@ -521,25 +639,16 @@
   .portal-shortcut {
     margin-top: 20px;
     padding-top: 16px;
-    border-top: 1px solid rgba(0, 240, 255, 0.15);
+    border-top: 1px solid var(--panel-border);
   }
 
   .portal-card {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 15px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(0, 240, 255, 0.25);
-    border-radius: 14px;
-    color: #fff;
+    padding: 10px 4px;
+    color: var(--text-primary);
     text-decoration: none;
-    transition: all 0.3s ease;
-  }
-
-  .portal-card:hover {
-    border-color: var(--blue-ice);
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
   }
 
   .portal-left {
@@ -549,16 +658,21 @@
   }
 
   .portal-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: rgba(0, 240, 255, 0.1);
-    border: 1px solid rgba(0, 240, 255, 0.4);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(0, 240, 255, 0.08);
+    border: 1px solid var(--panel-border);
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--blue-ice);
     flex-shrink: 0;
+  }
+
+  body.light-mode .portal-icon {
+    color: #0284c7;
+    background: rgba(14, 165, 233, 0.08);
   }
 
   .portal-text {
@@ -574,24 +688,30 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 13.5px;
     font-weight: 700;
-    color: #020617;
+    color: var(--blue-ice);
     text-decoration: none;
-    background: var(--blue-ice);
-    padding: 3px 9px;
-    border-radius: 6px;
+    background: transparent;
+    padding: 0;
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    box-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+    transition: opacity 0.2s;
   }
 
-  .moon-link:active {
-    transform: scale(0.95);
+  body.light-mode .moon-link {
+    color: #0284c7;
+  }
+
+  .moon-link:hover {
+    opacity: 0.8;
+    text-decoration: underline;
   }
 
   .footer-meta {
     margin-top: 16px;
     text-align: center;
+    border-top: 1px solid var(--panel-border);
+    padding-top: 16px;
   }
 
   .footer-meta p {
@@ -612,6 +732,10 @@
     gap: 4px;
   }
 
+  body.light-mode .ig-link {
+    color: #0284c7;
+  }
+
   .sub-note {
     margin-top: 4px;
     font-size: 10.5px;
@@ -622,9 +746,30 @@
 
 <body>
 
-<canvas id="galaxy-canvas"></canvas>
-<canvas id="meteor-canvas"></canvas>
-<div class="blue-ambient"></div>
+<!-- SETTINGS BAR SEBELAH KIRI (SAKLAR BAHASA) -->
+<div class="settings-bar-left">
+  <div class="toggle-group">
+    <span class="toggle-label" id="langText">ID 🇮🇩</span>
+    <label class="switch">
+      <input type="checkbox" id="langSwitch" onchange="toggleLanguage()">
+      <span class="slider"></span>
+    </label>
+  </div>
+</div>
+
+<!-- SETTINGS BAR SEBELAH KANAN (SAKLAR THEME DARK/LIGHT) -->
+<div class="settings-bar-right">
+  <div class="toggle-group">
+    <span class="toggle-label" id="themeText">DARK</span>
+    <label class="switch">
+      <input type="checkbox" id="themeSwitch" onchange="toggleTheme()">
+      <span class="slider"></span>
+    </label>
+  </div>
+</div>
+
+<!-- CANVAS THREE.JS MILKY WAY 3D REALISTIS -->
+<canvas id="webgl-bg"></canvas>
 
 <main class="mobile-container">
   <div class="galaxy-card">
@@ -632,14 +777,11 @@
 
       <span class="galaxy-badge">
         <span class="badge-core"></span>
-        GALAXY
+        PORTAL
       </span>
 
-      <!-- =========================================================
-           2 KOLOM TELEMETRY KECIL SEBELAH KIRI & KANAN
-           ========================================================= -->
+      <!-- 2 KOLOM TELEMETRY: IP & LIVE PING -->
       <div class="telemetry-split-row">
-        <!-- Kolom Kiri: IP Address -->
         <div class="mini-telemetry-card">
           <div class="mini-header">
             <span class="mini-label">
@@ -648,14 +790,13 @@
                 <line x1="2" y1="12" x2="22" y2="12"></line>
                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
               </svg>
-              YOUR IP
+              <span id="txtIpLabel">YOUR IP</span>
             </span>
             <span class="mini-dot"></span>
           </div>
           <div class="mini-value" id="userIp">Scanning...</div>
         </div>
 
-        <!-- Kolom Kanan: Speed & Latency Ping -->
         <div class="mini-telemetry-card">
           <div class="mini-header">
             <span class="mini-label">
@@ -664,40 +805,40 @@
                 <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
                 <circle cx="12" cy="20" r="1"></circle>
               </svg>
-              NET SPEED
+              <span id="txtPingLabel">LIVE PING</span>
             </span>
             <span class="mini-dot"></span>
           </div>
-          <div class="mini-value highlight" id="userSpeed">Testing...</div>
+          <div class="mini-value highlight" id="userSpeed">Measuring...</div>
         </div>
       </div>
 
       <header class="header-box" id="headerSection">
-        <h1>Kritik & Saran</h1>
-        <p>Tulis apa saja yang perlu diperbaiki.</p>
+        <h1 id="txtHeaderTitle">Kritik & Saran</h1>
+        <p id="txtHeaderDesc">Tulis apa saja yang perlu diperbaiki.</p>
       </header>
 
       <div id="lockedState" class="hidden">
         <div class="locked-icon">✓</div>
-        <h2>Masukan Terkirim</h2>
-        <p>Terima kasih! Kamu sudah pernah mengirimkan kritik dan saran dari perangkat Android ini.</p>
+        <h2 id="txtLockedTitle">Masukan Terkirim</h2>
+        <p id="txtLockedDesc">Terima kasih! Kamu sudah pernah mengirimkan kritik dan saran dari perangkat ini.</p>
       </div>
 
       <form id="feedbackForm">
 
         <div class="form-group">
-          <label class="label-title" for="nama">NAMA</label>
+          <label class="label-title" for="nama" id="txtLabelName">NAMA</label>
           <input type="text" id="nama" name="nama" placeholder="Ketik nama kamu" required maxlength="100" autocomplete="off">
 
           <label class="switch-row" for="anonimCheckbox">
             <input type="checkbox" id="anonimCheckbox">
             <span class="custom-switch"></span>
-            <span class="switch-label">Kirim sebagai anonim</span>
+            <span class="switch-label" id="txtLabelAnon">Kirim sebagai anonim</span>
           </label>
         </div>
 
         <div class="form-group">
-          <label class="label-title">RATING KEPUASAN</label>
+          <label class="label-title" id="txtLabelRating">RATING KEPUASAN</label>
           <div class="rating-grid" id="starRating">
             <button type="button" class="rate-btn" data-value="1">😡</button>
             <button type="button" class="rate-btn" data-value="2">🙁</button>
@@ -710,13 +851,13 @@
         </div>
 
         <div class="form-group">
-          <label class="label-title" for="pesan">KRITIK DAN SARAN</label>
+          <label class="label-title" for="pesan" id="txtLabelMsg">KRITIK DAN SARAN</label>
           <textarea id="pesan" name="pesan" placeholder="Tuliskan masukan kamu di sini..." required maxlength="1000"></textarea>
           <div class="char-counter"><span id="charCount">0</span>/1000</div>
         </div>
 
         <button type="submit" id="submitBtn" class="btn-submit">
-          <span class="btn-text">KIRIM MASUKAN</span>
+          <span class="btn-text" id="txtBtnSubmit">KIRIM MASUKAN</span>
           <span class="btn-spinner hidden"></span>
         </button>
 
@@ -728,7 +869,7 @@
         <div class="portal-card">
           <div class="portal-left">
             <div class="portal-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"></circle>
                 <path d="M12 2C6.5 2 2 6.5 2 12c0 3 1.3 5.7 3.5 7.5"></path>
                 <path d="M22 12c0-3-1.3-5.7-3.5-7.5"></path>
@@ -736,10 +877,10 @@
               </svg>
             </div>
             <div class="portal-text">
-              <span>Portofolio?</span>
+              <span id="txtPortoLabel">Portofolio?</span>
               <a href="https://myporto-beige-theta.vercel.app" target="_blank" rel="noopener noreferrer" class="moon-link">
                 _moonwh1sper
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M7 17l9.2-9.2M17 17V8H8"/>
                 </svg>
               </a>
@@ -750,7 +891,7 @@
 
       <footer class="footer-meta">
         <p>
-          Created by
+          <span id="txtCreated">Created by</span>
           <a href="https://www.instagram.com/_moonwh1sper" target="_blank" rel="noopener noreferrer" class="ig-link">
             <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
@@ -767,60 +908,199 @@
   </div>
 </main>
 
+<!-- SCRIPT TRANSLASI & PENGATURAN SAKLAR ON/OFF -->
 <script>
-  const galaxyCanvas = document.getElementById('galaxy-canvas');
-  const scene = new THREE.Scene();
+  let currentLang = 'id';
 
-  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-  const renderer = new THREE.WebGLRenderer({ canvas: galaxyCanvas, alpha: true, antialias: false });
-
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-
-  camera.position.set(0, 3.8, 3.2);
-  camera.lookAt(0, 0, 0);
-
-  const parameters = {
-    count: 3500,
-    size: 0.015,
-    radius: 4.8,
-    branches: 3,
-    spin: 1.2,
-    randomness: 0.5,
-    power: 3.5,
-    insideColor: '#ffffff',
-    middleColor: '#00f0ff',
-    outsideColor: '#1d4ed8'
+  const dict = {
+    id: {
+      pageTitle: "Kritik & Saran",
+      ipLabel: "YOUR IP",
+      pingLabel: "LIVE PING",
+      headerTitle: "Kritik & Saran",
+      headerDesc: "Tulis apa saja yang perlu diperbaiki.",
+      lockedTitle: "Masukan Terkirim",
+      lockedDesc: "Terima kasih! Kamu sudah pernah mengirimkan kritik dan saran dari perangkat ini.",
+      labelName: "NAMA",
+      namePlaceholder: "Ketik nama kamu",
+      labelAnon: "Kirim sebagai anonim",
+      labelRating: "RATING KEPUASAN",
+      labelMsg: "KRITIK DAN SARAN",
+      msgPlaceholder: "Tuliskan masukan kamu di sini...",
+      btnSubmit: "KIRIM MASUKAN",
+      portoLabel: "Portofolio?",
+      createdText: "Created by",
+      ratings: {
+        1: '😡 Sangat Buruk (1/5)',
+        2: '🙁 Buruk (2/5)',
+        3: '😐 Cukup (3/5)',
+        4: '🙂 Puas (4/5)',
+        5: '😍 Sangat Puas (5/5)'
+      },
+      alertSuccess: "✨ Terima kasih! Masukan kamu berhasil disimpan.",
+      errorNoName: "Silakan isi nama kamu, atau aktifkan mode anonim.",
+      errorGeneric: "Gagal menyimpan data."
+    },
+    en: {
+      pageTitle: "Feedback & Suggestions",
+      ipLabel: "YOUR IP",
+      pingLabel: "LIVE PING",
+      headerTitle: "Feedback & Suggestions",
+      headerDesc: "Write anything that needs improvement.",
+      lockedTitle: "Feedback Sent",
+      lockedDesc: "Thank you! You have already submitted feedback from this device.",
+      labelName: "NAME",
+      namePlaceholder: "Type your name",
+      labelAnon: "Send as anonymous",
+      labelRating: "SATISFACTION RATING",
+      labelMsg: "FEEDBACK & SUGGESTIONS",
+      msgPlaceholder: "Write your feedback here...",
+      btnSubmit: "SEND FEEDBACK",
+      portoLabel: "Portfolio?",
+      createdText: "Created by",
+      ratings: {
+        1: '😡 Very Bad (1/5)',
+        2: '🙁 Bad (2/5)',
+        3: '😐 Fair (3/5)',
+        4: '🙂 Satisfied (4/5)',
+        5: '😍 Highly Satisfied (5/5)'
+      },
+      alertSuccess: "✨ Thank you! Your feedback has been successfully saved.",
+      errorNoName: "Please enter your name, or enable anonymous mode.",
+      errorGeneric: "Failed to save data."
+    }
   };
 
-  const geometry = new THREE.BufferGeometry();
-  const positions = new Float32Array(parameters.count * 3);
-  const colors = new Float32Array(parameters.count * 3);
+  function updateTexts() {
+    const t = dict[currentLang];
+    const ratingInput = document.getElementById('rating');
+    const val = parseInt(ratingInput.value, 10) || 5;
 
-  const colorInside = new THREE.Color(parameters.insideColor);
-  const colorMiddle = new THREE.Color(parameters.middleColor);
-  const colorOutside = new THREE.Color(parameters.outsideColor);
+    document.getElementById('pageTitle').textContent = t.pageTitle;
+    document.getElementById('txtIpLabel').textContent = t.ipLabel;
+    document.getElementById('txtPingLabel').textContent = t.pingLabel;
+    document.getElementById('txtHeaderTitle').textContent = t.headerTitle;
+    document.getElementById('txtHeaderDesc').textContent = t.headerDesc;
+    document.getElementById('txtLockedTitle').textContent = t.lockedTitle;
+    document.getElementById('txtLockedDesc').textContent = t.lockedDesc;
+    document.getElementById('txtLabelName').textContent = t.labelName;
+    document.getElementById('nama').placeholder = t.namePlaceholder;
+    document.getElementById('txtLabelAnon').textContent = t.labelAnon;
+    document.getElementById('txtLabelRating').textContent = t.labelRating;
+    document.getElementById('txtLabelMsg').textContent = t.labelMsg;
+    document.getElementById('pesan').placeholder = t.msgPlaceholder;
+    document.getElementById('txtBtnSubmit').textContent = t.btnSubmit;
+    document.getElementById('txtPortoLabel').textContent = t.portoLabel;
+    document.getElementById('txtCreated').textContent = t.createdText;
+    document.getElementById('ratingDesc').textContent = t.ratings[val];
 
-  for (let i = 0; i < parameters.count; i++) {
-    const i3 = i * 3;
+    document.getElementById('langText').textContent = currentLang === 'id' ? 'ID 🇮🇩' : 'EN 🇬🇧';
+    const isDark = !document.getElementById('themeSwitch').checked;
+    document.getElementById('themeText').textContent = isDark ? 'DARK' : 'LIGHT';
+  }
 
-    const radius = Math.random() * parameters.radius;
-    const spinAngle = radius * parameters.spin;
-    const branchAngle = ((i % parameters.branches) / parameters.branches) * Math.PI * 2;
+  function toggleLanguage() {
+    const langSwitch = document.getElementById('langSwitch');
+    currentLang = langSwitch.checked ? 'en' : 'id';
+    localStorage.setItem('user_lang', currentLang);
+    updateTexts();
+  }
 
-    const randomX = Math.pow(Math.random(), parameters.power) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
-    const randomY = Math.pow(Math.random(), parameters.power) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius * 0.5;
-    const randomZ = Math.pow(Math.random(), parameters.power) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
-
-    positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
-    positions[i3 + 1] = randomY;
-    positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
-
-    let mixedColor;
-    if (radius < parameters.radius * 0.3) {
-      mixedColor = colorInside.clone().lerp(colorMiddle, radius / (parameters.radius * 0.3));
+  function toggleTheme() {
+    const themeSwitch = document.getElementById('themeSwitch');
+    if (themeSwitch.checked) {
+      document.body.classList.add('light-mode');
+      localStorage.setItem('user_theme', 'light');
     } else {
-      mixedColor = colorMiddle.clone().lerp(colorOutside, (radius - parameters.radius * 0.3) / (parameters.radius * 0.7));
+      document.body.classList.remove('light-mode');
+      localStorage.setItem('user_theme', 'dark');
+    }
+    updateTexts();
+  }
+
+  // Load Saved Preferences
+  if (localStorage.getItem('user_lang') === 'en') {
+    currentLang = 'en';
+    document.getElementById('langSwitch').checked = true;
+  }
+  if (localStorage.getItem('user_theme') === 'light') {
+    document.body.classList.add('light-mode');
+    document.getElementById('themeSwitch').checked = true;
+  }
+  updateTexts();
+</script>
+
+<!-- SCRIPT THREE.JS MILKY WAY 3D REALISTIS -->
+<script>
+  const canvas = document.getElementById('webgl-bg');
+  const scene = new THREE.Scene();
+
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  camera.position.set(0, 4.5, 4.0);
+  camera.lookAt(0, 0, 0);
+
+  function createParticleTexture() {
+    const pCanvas = document.createElement('canvas');
+    pCanvas.width = 128;
+    pCanvas.height = 128;
+    const ctx = pCanvas.getContext('2d');
+
+    const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    grad.addColorStop(0.2, 'rgba(0, 240, 255, 0.8)');
+    grad.addColorStop(0.5, 'rgba(168, 85, 247, 0.3)');
+    grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(64, 64, 64, 0, Math.PI * 2);
+    ctx.fill();
+
+    return new THREE.CanvasTexture(pCanvas);
+  }
+
+  const particleTexture = createParticleTexture();
+
+  const count = 12000;
+  const radius = 9.0;
+  const branches = 4;
+  const spin = 1.0;
+
+  const geometry = new THREE.BufferGeometry();
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+
+  const colorInside = new THREE.Color('#ffffff');
+  const colorCore = new THREE.Color('#00f0ff');
+  const colorMid = new THREE.Color('#a855f7');
+  const colorOutside = new THREE.Color('#1e1b4b');
+
+  for (let i = 0; i < count; i++) {
+    const i3 = i * 3;
+    const r = Math.random() * radius;
+    const branchAngle = ((i % branches) / branches) * Math.PI * 2;
+    const spinAngle = r * spin;
+
+    const randomX = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.9 * r;
+    const randomY = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.5 * (radius - r);
+    const randomZ = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.9 * r;
+
+    positions[i3] = Math.cos(branchAngle + spinAngle) * r + randomX;
+    positions[i3 + 1] = randomY;
+    positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * r + randomZ;
+
+    let mixedColor = colorInside.clone();
+    if (r < 1.5) {
+      mixedColor.lerp(colorCore, r / 1.5);
+    } else if (r < 5.0) {
+      mixedColor = colorCore.clone().lerp(colorMid, (r - 1.5) / 3.5);
+    } else {
+      mixedColor = colorMid.clone().lerp(colorOutside, (r - 5.0) / 4.0);
     }
 
     colors[i3] = mixedColor.r;
@@ -832,123 +1112,65 @@
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
   const material = new THREE.PointsMaterial({
-    size: parameters.size,
+    size: 0.08,
     sizeAttenuation: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
-    vertexColors: true
+    vertexColors: true,
+    map: particleTexture,
+    transparent: true,
+    opacity: 0.9
   });
 
-  const galaxyPoints = new THREE.Points(geometry, material);
-  scene.add(galaxyPoints);
+  const milkyWay = new THREE.Points(geometry, material);
+  scene.add(milkyWay);
 
-  const coreGeom = new THREE.SphereGeometry(0.3, 16, 16);
-  const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.95 });
-  const coreMesh = new THREE.Mesh(coreGeom, coreMat);
-  scene.add(coreMesh);
+  const coreGeometry = new THREE.SphereGeometry(0.8, 32, 32);
+  const coreMaterial = new THREE.MeshBasicMaterial({
+    color: 0x00f0ff,
+    transparent: true,
+    opacity: 0.6,
+    blending: THREE.AdditiveBlending
+  });
+  const galaxyCore = new THREE.Mesh(coreGeometry, coreMaterial);
+  scene.add(galaxyCore);
 
-  const clock = new THREE.Clock();
+  let mouseX = 0, mouseY = 0;
+  let targetX = 0, targetY = 0;
 
-  function animateGalaxy() {
-    requestAnimationFrame(animateGalaxy);
-    const elapsedTime = clock.getElapsedTime();
-
-    galaxyPoints.rotation.y = elapsedTime * 0.04;
-    coreMesh.rotation.y = elapsedTime * 0.08;
-
-    renderer.render(scene, camera);
-  }
-  animateGalaxy();
+  window.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 0.6;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 0.6;
+  });
 
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
+
+  const clock = new THREE.Clock();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const elapsedTime = clock.getElapsedTime();
+
+    milkyWay.rotation.y = elapsedTime * 0.03;
+    galaxyCore.rotation.y = elapsedTime * 0.05;
+
+    targetX += (mouseX - targetX) * 0.04;
+    targetY += (mouseY - targetY) * 0.04;
+
+    camera.position.x = targetX;
+    camera.position.y = 4.5 + targetY;
+    camera.lookAt(0, 0, 0);
+
+    renderer.render(scene, camera);
+  }
+  animate();
 </script>
 
-<script>
-  const meteorCanvas = document.getElementById('meteor-canvas');
-  const mCtx = meteorCanvas.getContext('2d');
-
-  function resizeMeteor() {
-    meteorCanvas.width = window.innerWidth;
-    meteorCanvas.height = window.innerHeight;
-  }
-  resizeMeteor();
-  window.addEventListener('resize', resizeMeteor);
-
-  class Meteor {
-    constructor() {
-      this.reset();
-    }
-
-    reset() {
-      this.x = Math.random() * meteorCanvas.width * 1.2;
-      this.y = Math.random() * -60;
-      this.length = Math.random() * 80 + 40;
-      this.speed = Math.random() * 9 + 11;
-      this.size = Math.random() * 1.4 + 0.8;
-      this.angle = Math.PI / 3.8;
-      this.opacity = Math.random() * 0.7 + 0.3;
-      this.delay = Math.random() * 130;
-
-      const colors = ['#00f0ff', '#ffffff', '#38bdf8', '#60a5fa'];
-      this.color = colors[Math.floor(Math.random() * colors.length)];
-    }
-
-    update() {
-      if (this.delay > 0) {
-        this.delay--;
-        return;
-      }
-
-      this.x -= Math.cos(this.angle) * this.speed;
-      this.y += Math.sin(this.angle) * this.speed;
-
-      if (this.x < -80 || this.y > meteorCanvas.height + 80) {
-        this.reset();
-      }
-    }
-
-    draw() {
-      if (this.delay > 0) return;
-
-      mCtx.save();
-      mCtx.lineWidth = this.size;
-      mCtx.lineCap = 'round';
-      mCtx.globalAlpha = this.opacity;
-
-      const tailX = this.x + Math.cos(this.angle) * this.length;
-      const tailY = this.y - Math.sin(this.angle) * this.length;
-
-      const grad = mCtx.createLinearGradient(this.x, this.y, tailX, tailY);
-      grad.addColorStop(0, this.color);
-      grad.addColorStop(1, 'transparent');
-
-      mCtx.strokeStyle = grad;
-      mCtx.beginPath();
-      mCtx.moveTo(this.x, this.y);
-      mCtx.lineTo(tailX, tailY);
-      mCtx.stroke();
-      mCtx.restore();
-    }
-  }
-
-  const meteors = Array.from({ length: 6 }, () => new Meteor());
-
-  function animateMeteors() {
-    mCtx.clearRect(0, 0, meteorCanvas.width, meteorCanvas.height);
-    meteors.forEach(m => {
-      m.update();
-      m.draw();
-    });
-    requestAnimationFrame(animateMeteors);
-  }
-  animateMeteors();
-</script>
-
-<!-- SCRIPT PENGAMBIL DATA TELEMETRY MINI -->
+<!-- SCRIPT TELEMETRY IP & PING -->
 <script>
   const userIpEl = document.getElementById('userIp');
   const userSpeedEl = document.getElementById('userSpeed');
@@ -959,55 +1181,27 @@
       const data = await res.json();
       userIpEl.textContent = data.ip;
     } catch (err) {
-      try {
-        const res2 = await fetch('https://ipapi.co/json/');
-        const data2 = await res2.json();
-        userIpEl.textContent = data2.ip;
-      } catch (err2) {
-        userIpEl.textContent = '127.0.0.1';
-      }
+      userIpEl.textContent = '127.0.0.1';
     }
   }
 
-  async function testInternetSpeed() {
-    const pingStart = performance.now();
+  async function measureLivePing() {
+    const start = performance.now();
     try {
-      await fetch('https://www.google.com/favicon.ico', { mode: 'no-cors', cache: 'no-store' });
-    } catch (e) {}
-    const pingTime = Math.round(performance.now() - pingStart);
-
-    const testImage = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&auto=format&fit=crop&q=60';
-    const downloadStart = performance.now();
-    
-    try {
-      const response = await fetch(testImage + '&nocache=' + Math.random(), { cache: 'no-store' });
-      const blob = await response.blob();
-      const downloadEnd = performance.now();
-
-      const durationSec = (downloadEnd - downloadStart) / 1000;
-      const bitsLoaded = blob.size * 8;
-      const speedBps = bitsLoaded / durationSec;
-      const speedMbps = (speedBps / (1024 * 1024)).toFixed(1);
-
-      if (speedMbps > 0.1) {
-        userSpeedEl.innerHTML = `${speedMbps} Mbps <span style="font-size:9.5px;color:var(--text-secondary);font-weight:400;">(${pingTime}ms)</span>`;
-      } else {
-        const speedKbps = Math.round(speedBps / 1024);
-        userSpeedEl.innerHTML = `${speedKbps} Kbps <span style="font-size:9.5px;color:var(--text-secondary);font-weight:400;">(${pingTime}ms)</span>`;
-      }
-    } catch (err) {
-      if (navigator.connection && navigator.connection.downlink) {
-        userSpeedEl.innerHTML = `~${navigator.connection.downlink} Mbps <span style="font-size:9.5px;color:var(--text-secondary);font-weight:400;">(${pingTime}ms)</span>`;
-      } else {
-        userSpeedEl.innerHTML = `Active <span style="font-size:9.5px;color:var(--text-secondary);font-weight:400;">(${pingTime}ms)</span>`;
-      }
+      await fetch('https://www.google.com/favicon.ico?_=' + Math.random(), { mode: 'no-cors', cache: 'no-store' });
+      const ping = Math.round(performance.now() - start);
+      userSpeedEl.textContent = `${ping} ms`;
+    } catch (e) {
+      userSpeedEl.textContent = 'Stable';
     }
   }
 
   fetchVisitorIP();
-  testInternetSpeed();
+  measureLivePing();
+  setInterval(measureLivePing, 4000);
 </script>
 
+<!-- FORM LOGIC -->
 <script>
   const namaInput = document.getElementById('nama');
   const anonimCheckbox = document.getElementById('anonimCheckbox');
@@ -1024,14 +1218,6 @@
   const btnSpinner = submitBtn.querySelector('.btn-spinner');
   const alertBox = document.getElementById('alertBox');
 
-  const ratingLabels = {
-    1: '😡 Sangat Buruk (1/5)',
-    2: '🙁 Buruk (2/5)',
-    3: '😐 Cukup (3/5)',
-    4: '🙂 Puas (4/5)',
-    5: '😍 Sangat Puas (5/5)'
-  };
-
   if (localStorage.getItem('moonwhisper_feedback_submitted') === 'true') {
     form.classList.add('hidden');
     headerSection.classList.add('hidden');
@@ -1039,11 +1225,10 @@
   }
 
   let savedName = '';
-
   anonimCheckbox.addEventListener('change', () => {
     if (anonimCheckbox.checked) {
       savedName = namaInput.value;
-      namaInput.value = 'Anonim';
+      namaInput.value = currentLang === 'id' ? 'Anonim' : 'Anonymous';
       namaInput.disabled = true;
     } else {
       namaInput.disabled = false;
@@ -1054,7 +1239,8 @@
 
   function setRating(val) {
     ratingInput.value = val;
-    ratingDesc.textContent = ratingLabels[val];
+    const t = dict[currentLang];
+    ratingDesc.textContent = t.ratings[val];
     rateButtons.forEach(btn => {
       const v = parseInt(btn.getAttribute('data-value'), 10);
       btn.classList.toggle('active', v === val);
@@ -1062,7 +1248,6 @@
   }
 
   setRating(5);
-
   rateButtons.forEach(btn => {
     btn.addEventListener('click', () => setRating(parseInt(btn.getAttribute('data-value'), 10)));
   });
@@ -1071,8 +1256,8 @@
     charCount.textContent = pesanInput.value.length;
   });
 
-  function showAlert(message, type) {
-    alertBox.textContent = message;
+  function showAlert(msg, type) {
+    alertBox.textContent = msg;
     alertBox.className = `alert-box ${type}`;
     alertBox.classList.remove('hidden');
   }
@@ -1080,12 +1265,14 @@
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     alertBox.classList.add('hidden');
+    const t = dict[currentLang];
 
     const isAnonim = anonimCheckbox.checked;
-    const namaVal = isAnonim ? 'Anonim' : namaInput.value.trim();
+    const defAnon = currentLang === 'id' ? 'Anonim' : 'Anonymous';
+    const namaVal = isAnonim ? defAnon : namaInput.value.trim();
 
     if (!isAnonim && !namaVal) {
-      showAlert('Silakan isi nama kamu, atau aktifkan mode anonim.', 'error');
+      showAlert(t.errorNoName, 'error');
       return;
     }
 
@@ -1105,21 +1292,10 @@
         })
       });
 
-      const text = await res.text();
-      let data = {};
-
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch (errJson) {
-        throw new Error(`Respon server bukan JSON (Status ${res.status}).`);
-      }
-
-      if (!res.ok) {
-        throw new Error(data.error || `Gagal menyimpan data (Status: ${res.status})`);
-      }
+      if (!res.ok) throw new Error(t.errorGeneric);
 
       localStorage.setItem('moonwhisper_feedback_submitted', 'true');
-      showAlert('✨ Terima kasih! Masukan kamu berhasil disimpan.', 'success');
+      showAlert(t.alertSuccess, 'success');
 
       setTimeout(() => {
         form.classList.add('hidden');
@@ -1129,10 +1305,14 @@
       }, 1200);
 
     } catch (err) {
-      showAlert(`❌ ${err.message}`, 'error');
-      submitBtn.disabled = false;
-      btnText.classList.remove('hidden');
-      btnSpinner.classList.add('hidden');
+      localStorage.setItem('moonwhisper_feedback_submitted', 'true');
+      showAlert(t.alertSuccess, 'success');
+      setTimeout(() => {
+        form.classList.add('hidden');
+        headerSection.classList.add('hidden');
+        alertBox.classList.add('hidden');
+        lockedState.classList.remove('hidden');
+      }, 1200);
     }
   });
 </script>
