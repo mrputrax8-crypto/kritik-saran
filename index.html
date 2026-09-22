@@ -878,8 +878,9 @@
 
         <div class="form-group">
           <label class="label-title" for="pesan" id="txtLabelMsg">KRITIK DAN SARAN</label>
-          <textarea id="pesan" name="pesan" placeholder="Tuliskan masukan kamu di sini..." required maxlength="1000"></textarea>
-          <div class="char-counter"><span id="charCount">0</span>/1000</div>
+          <!-- Maksimal 200 huruf -->
+          <textarea id="pesan" name="pesan" placeholder="Tuliskan masukan kamu di sini (opsional)..." maxlength="200"></textarea>
+          <div class="char-counter"><span id="charCount">0</span>/200</div>
         </div>
 
         <button type="submit" id="submitBtn" class="btn-submit">
@@ -952,7 +953,7 @@
       labelAnon: "Kirim sebagai anonim",
       labelRating: "RATING KEPUASAN",
       labelMsg: "KRITIK DAN SARAN",
-      msgPlaceholder: "Tuliskan masukan kamu di sini...",
+      msgPlaceholder: "Tuliskan masukan kamu di sini (opsional)...",
       btnSubmit: "KIRIM MASUKAN",
       portoLabel: "Portofolio?",
       createdText: "Created by",
@@ -980,7 +981,7 @@
       labelAnon: "Send as anonymous",
       labelRating: "SATISFACTION RATING",
       labelMsg: "FEEDBACK & SUGGESTIONS",
-      msgPlaceholder: "Write your feedback here...",
+      msgPlaceholder: "Write your feedback here (optional)...",
       btnSubmit: "SEND FEEDBACK",
       portoLabel: "Portfolio?",
       createdText: "Created by",
@@ -1225,7 +1226,7 @@
 
   fetchVisitorIP();
   measureLivePing();
-  setInterval(measureLivePing, 4000);
+  setInterval(measureLivePing, 1000);
 </script>
 
 <!-- FORM LOGIC -->
